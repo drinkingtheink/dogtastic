@@ -7,7 +7,11 @@
             class="primary fetch-dogs"
         >New Dog, Please</button>
 
-        <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
+        <div class="img-stage">
+            <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
+            <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
+            </p>
+        </div>
 
         <h4>{{ headline }}</h4>
 
@@ -47,6 +51,7 @@
                 dogImage: null,
                 names: null,
                 numberOfNames: numberOfNames,
+                selectedName: null,
             }
         },
         computed: {
@@ -85,9 +90,11 @@
                 let newDog = {};
                 newDog.dogImage = this.dogImage;
                 newDog.name = name;
+                this.selectedName = name;
                 this.emitDogToKennel(newDog);
                 this.removeNameFromList(name);
                 this.fetchDogs();
+                this.clearSelectedName();
             },
             removeNameFromList (name) {
                 let filteredNames = this.names.filter(filtName => filtName != name);
@@ -95,6 +102,9 @@
             },
             emitDogToKennel (dog) {
                 this.$emit('newDogForKennel', dog);
+            },
+            clearSelectedName () {
+                setTimeout(() => this.selectedName = null, 1000); 
             }
         },
         mounted() {
@@ -131,8 +141,25 @@
         border: 4px solid transparent;
     }
 
+    .img-stage {
+        position: relative;
+    }
+
+    .dog-selected-name {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 2rem;
+        text-align: center;
+        width: 100%;
+        background-color: $green;
+        color: white;
+        font-weight: bold;
+        font-size: 130%;
+    }
+
     .name {
-        border:3px solid $green;
+        border:3px solid $green2;
         padding: .25rem .5rem;
         margin: .25rem;
         transition: all .2s;
@@ -143,6 +170,7 @@
             cursor: pointer;
             background-color: #333;
             color: white;
+            border-color: $green2;
         }
     }
 
