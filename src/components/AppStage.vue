@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     addDogToKennel (dog) {
-        this.kennelRoster.push(dog);
+        this.kennelRoster.unshift(dog);
     }
   }
 }

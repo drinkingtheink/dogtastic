@@ -25,6 +25,11 @@
             return {
                 title: 'Your Pooch Stable',
             }
+        },
+        computed: {
+            dogCount() {
+                return (this.dogs && this.dogs.length && this.dogs.length > 0) ? this.dogs.length : 0;
+            }
         }
     }
 </script>
