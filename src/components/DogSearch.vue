@@ -9,8 +9,11 @@
 
         <div class="img-stage">
             <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
-            <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
-            </p>
+            
+            <transition name="fade">
+                <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
+                </p>
+            </transition>
         </div>
 
         <h4>{{ headline }}</h4>
@@ -40,6 +43,7 @@
     import nameList from '../fixtures/names';
 
     const numberOfNames = 10;
+    const transitionTime = 750;
 
     export default {
         name: 'DogSearch',
@@ -92,7 +96,11 @@
                 newDog.name = name;
                 this.selectedName = name;
                 this.emitDogToKennel(newDog);
-                this.removeNameFromList(name);
+
+                setTimeout(() => this.dogCleanup(), transitionTime);
+            },
+            dogCleanup (dogName) {
+                this.removeNameFromList(dogName);
                 this.fetchDogs();
                 this.clearSelectedName();
             },
@@ -104,7 +112,7 @@
                 this.$emit('newDogForKennel', dog);
             },
             clearSelectedName () {
-                setTimeout(() => this.selectedName = null, 1000); 
+                setTimeout(() => this.selectedName = null, transitionTime);
             }
         },
         mounted() {

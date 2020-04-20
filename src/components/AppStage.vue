@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      headline: 'Dogtastic',
+      headline: 'Dogtastic!',
       subHeadline: 'Name and Claim Your Own Cyber Kennel',
       kennelRoster:  []
     }
@@ -149,5 +149,12 @@ export default {
     #kennel {
         @include yellowBg;
         border-radius: 20px;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
     }
 </style>
