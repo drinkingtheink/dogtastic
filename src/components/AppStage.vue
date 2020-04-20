@@ -63,11 +63,15 @@ export default {
     
     html,
     body {
-        @include funBg;
         padding: 0;
         margin: 0;
         font-size: 16pt;
     }
+
+    body {
+        @include funBg;
+    }
+
 
     h1,
     h2,
@@ -112,14 +116,10 @@ export default {
         font-size: 330%;
     }
 
-    .app-headline,
-    .app-subheadline {
-
-    }
-
     .app-subheadline {
         padding-bottom: .25rem;
         margin-bottom: 1rem;
+        color: $green2;
     }
 
     .app-panels {
@@ -141,7 +141,7 @@ export default {
         padding-top: 1rem;
 
         @media only screen and (max-width: 1020px) {
-            width: 100%;
+            width: 100vw;
             margin: 0 auto;
         }
     }

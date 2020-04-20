@@ -49,6 +49,7 @@
         color: white;
         width: 100%;
         padding: .2rem 0;
+        font-weight: bold;
     }
 
     .remove-dog {
