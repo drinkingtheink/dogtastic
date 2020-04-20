@@ -7,6 +7,7 @@
                 v-for="(dog, index) in dogs"
                 :key="`dog-${index}')`"
                 :dog="dog"
+                v-on:removeDogFromKennel="removeDogFromKennel"
             />
         </section>
         <p v-else>-- Add a Pooch to Your Stable --</p>
@@ -31,15 +32,20 @@
             dogCount() {
                 return (this.dogs && this.dogs.length && this.dogs.length > 0) ? this.dogs.length : 0;
             }
+        },
+        methods: {
+            removeDogFromKennel (dog) {
+                this.$emit('removeDogFromKennel', dog);
+            }
         }
     }
 </script>
 
 <style scoped>
-.dog-display {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+    .dog-display {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 </style>

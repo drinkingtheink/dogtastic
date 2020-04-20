@@ -1,7 +1,7 @@
 <template>
   <main>
-    <h1>{{ headline }}</h1>
-    <h2>{{ subHeadline }}</h2>
+    <h1 class="app-headline">{{ headline }}</h1>
+    <h2 class="app-subheadline">{{ subHeadline }}</h2>
     <section class="app-panels">
       <DogSearch 
         id="dog-search" 
@@ -12,6 +12,7 @@
           id="kennel" 
           class="app-panel" 
           :dogs="kennelRoster"
+          v-on:removeDogFromKennel="removeDog"
       />
     </section>
   </main>
@@ -40,6 +41,10 @@ export default {
   methods: {
     addDogToKennel (dog) {
         this.kennelRoster.unshift(dog);
+    },
+    removeDog (dog) {
+        let filteredRoster  = this.kennelRoster.filter(kennelDog =>  kennelDog.name != dog.name);
+        this.kennelRoster = filteredRoster;
     }
   }
 }
@@ -47,8 +52,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+    @import url('https://fonts.googleapis.com/css?family=Bungee+Inline&display=swap');
+    @import '../styles/palette';
+    @import '../styles/bgMixin';
+    
     html,
     body {
+        @include funBg;
         padding: 0;
         margin: 0;
         font-size: 16pt;
@@ -62,21 +72,49 @@ export default {
         text-transform: uppercase;
         margin: 0;
         padding: 0;
+        color: $green;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: 'Bungee Inline', cursive;
     }
 
     button {
         display: block;
         text-align: center;
         margin: 0 auto;
-        padding: 1rem 1.5rem;
+        padding: .5rem .75rem;
         transition: all .2s;
         border-radius: 10px;
+        opacity: .7;
 
         &:hover {
             cursor: pointer;
+            opacity: 1;
+        }
+
+        &.primary {
             background-color: #333;
             color: white;
+            font-size: 80%;
+            font-weight: bold;
         }
+    }
+
+    .app-headline {
+        font-size: 330%;
+    }
+
+    .app-headline,
+    .app-subheadline {
+
+    }
+
+    .app-subheadline {
+        padding-bottom: .25rem;
+        margin-bottom: 1rem;
     }
 
     .app-panels {
@@ -86,8 +124,12 @@ export default {
 
     .app-panel {
         width: 50vw;
-        border: 1px solid black;
         min-height: 100vh;
         padding-top: 1rem;
+    }
+
+    #kennel {
+        @include yellowBg;
+        border-radius: 20px;
     }
 </style>

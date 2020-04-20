@@ -2,7 +2,10 @@
     <div>
         <h3>{{ title }}</h3>
 
-        <button v-on:click="fetchDogs">New Dog, Please</button>
+        <button 
+            v-on:click="fetchDogs"
+            class="primary"
+        >New Dog, Please</button>
 
         <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
 
@@ -20,7 +23,10 @@
             </button>
         </div>
 
-        <button v-on:click="fetchNames">More Names, Please</button>
+        <button 
+            v-on:click="fetchNames"
+            class="primary"
+        >More Names, Please</button>
 
         <p v-if="inProcess">Fetching...</p>
     </div>
@@ -98,7 +104,9 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    @import '../styles/palette';
+
     .name-gallery {
         display: flex;
         flex-wrap: wrap;
@@ -117,10 +125,12 @@
     }
 
     .name {
-        border: 1px solid black;
+        border:3px solid $green;
         padding: .25rem .5rem;
         margin: .25rem;
         transition: all .2s;
+        font-size: 120%;
+        opacity: 1;
 
         &:hover {
             cursor: pointer;

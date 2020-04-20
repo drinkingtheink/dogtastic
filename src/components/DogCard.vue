@@ -4,32 +4,58 @@
         :style="{ backgroundImage: `url('${dog.dogImage}')` }"
     >
         <p class="dog-card-name">{{ dog.name }}</p>
+
+        <button 
+            v-on:click="removeDogFromKennel(dog)"
+            class="remove-dog"
+        >Remove X</button>
     </div>
 </template>
 
 <script>
     export default {
         name: 'DogCard',
-        props: ['dog']
+        props: ['dog'],
+        methods: {
+            removeDogFromKennel (dog) {
+                this.$emit('removeDogFromKennel', dog);
+            }
+        }
     }
 </script>
 
-<style scoped>
-.dog-card {
-    border: 2px solid black;
-    height: 10rem;
-    width: 10em;
-    position: relative;
-    margin: .2rem;
-    background-size: cover;
-}
+<style lang="scss" scoped>
+    @import '../styles/palette';
 
-.dog-card-name {
-    position: absolute;
-    bottom: -1rem;
-    background-color: black;
-    color: white;
-    width: 100%;
-    padding: .2rem 0;
-}
+    .dog-card {
+        border: 2px solid $green;
+        height: 10rem;
+        width: 10em;
+        position: relative;
+        margin: .2rem;
+        background-size: cover;
+
+        &:hover {
+            .remove-dog {
+                display: inline-block;
+            }
+        }
+    }
+
+    .dog-card-name {
+        position: absolute;
+        bottom: -1rem;
+        background-color: $green;
+        color: white;
+        width: 100%;
+        padding: .2rem 0;
+    }
+
+    .remove-dog {
+        transition: all .2s;
+        padding: .25rem .5rem;
+        display: none;
+        top: .25rem;
+        right: .25rem;
+    }
 </style>
