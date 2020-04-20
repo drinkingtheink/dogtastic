@@ -48,6 +48,13 @@
                 return this.names ? this.names.length : 0;
             }
         },
+        watch: {
+            nameCount () {
+                if(this.nameCount < 1) {
+                    this.fetchNames();
+                }
+            }
+        },
         methods: {
             fetchDogs () {
                 const baseURI = 'https://dog.ceo/api/breeds/image/random';
@@ -114,12 +121,12 @@
         padding: .25rem .5rem;
         margin: .25rem;
         transition: all .2s;
-    }
 
-    .name:hover {
-        cursor: pointer;
-        background-color: #333;
-        color: white;
+        &:hover {
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+        }
     }
 
 </style>

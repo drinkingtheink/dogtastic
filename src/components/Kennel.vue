@@ -2,13 +2,14 @@
     <div>
         <h3>{{ title }}</h3>
 
-        <section class="dog-display">
+        <section class="dog-display" v-if="dogCount > 0">
             <DogCard
-                v-for="dog in dogs"
-                :key="dog.name"
+                v-for="(dog, index) in dogs"
+                :key="`dog-${index}')`"
                 :dog="dog"
             />
         </section>
+        <p v-else>-- Add a Pooch to Your Stable --</p>
     </div>
 </template>
 

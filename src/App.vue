@@ -10,7 +10,7 @@
     export default {
         name: 'App',
         components: {
-        AppStage
+            AppStage
         },
     }
 </script>
@@ -24,4 +24,11 @@
         color: #2c3e50;
         margin-top: 1rem;
     }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
+    }    
 </style>

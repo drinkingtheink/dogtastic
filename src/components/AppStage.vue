@@ -46,48 +46,48 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-  html,
-  body {
-    padding: 0;
-    margin: 0;
-    font-size: 16pt;
-  }
+<style lang="scss">
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        font-size: 16pt;
+    }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    text-transform: uppercase;
-    margin: 0;
-    padding: 0;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        text-transform: uppercase;
+        margin: 0;
+        padding: 0;
+    }
 
-  button {
-    display: block;
-    text-align: center;
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
-    transition: all .2s;
-    border-radius: 10px;
-  }
+    button {
+        display: block;
+        text-align: center;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+        transition: all .2s;
+        border-radius: 10px;
 
-  button:hover {
-    cursor: pointer;
-    background-color: #333;
-    color: white;
-  }
+        &:hover {
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+        }
+    }
 
-  .app-panels {
-    display: flex;
-    align-content: stretch;
-  }
+    .app-panels {
+        display: flex;
+        align-content: stretch;
+    }
 
-  .app-panel {
-    width: 50vw;
-    border: 1px solid black;
-    min-height: 100vh;
-    padding-top: 1rem;
-  }
+    .app-panel {
+        width: 50vw;
+        border: 1px solid black;
+        min-height: 100vh;
+        padding-top: 1rem;
+    }
 </style>
