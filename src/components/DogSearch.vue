@@ -4,7 +4,7 @@
 
         <button 
             v-on:click="fetchDogs"
-            class="primary"
+            class="primary fetch-dogs"
         >New Dog, Please</button>
 
         <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
@@ -114,14 +114,21 @@
         justify-content: center;
     }
 
+    .fetch-dogs {
+        margin-bottom: .25rem;
+    }
+
     .dog-img {
-        max-width: 100%;
+        max-width: 90%;
         min-height: 20em;
         transition: all .2s;
+        border-radius: 50%;
+        border: 4px solid $green;
     }
 
     .dog-img.in-process {
         opacity: .25;
+        border: 4px solid transparent;
     }
 
     .name {

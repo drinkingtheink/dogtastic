@@ -11,6 +11,14 @@
             />
         </section>
         <p v-else>-- Add a Pooch to Your Stable --</p>
+
+        <button 
+            class="clear-kennel primary" 
+            v-on:click="clearKennel"
+            v-if="dogCount > 0"
+        >
+            Empty Kennel
+        </button>
     </div>
 </template>
 
@@ -36,6 +44,9 @@
         methods: {
             removeDogFromKennel (dog) {
                 this.$emit('removeDogFromKennel', dog);
+            },
+            clearKennel () {
+                this.$emit('clearKennel');
             }
         }
     }

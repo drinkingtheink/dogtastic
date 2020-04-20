@@ -13,6 +13,7 @@
           class="app-panel" 
           :dogs="kennelRoster"
           v-on:removeDogFromKennel="removeDog"
+          v-on:clearKennel="clearKennel"
       />
     </section>
   </main>
@@ -45,6 +46,9 @@ export default {
     removeDog (dog) {
         let filteredRoster  = this.kennelRoster.filter(kennelDog =>  kennelDog.name != dog.name);
         this.kennelRoster = filteredRoster;
+    },
+    clearKennel () {
+        this.kennelRoster = [];
     }
   }
 }
@@ -55,6 +59,7 @@ export default {
     @import url('https://fonts.googleapis.com/css?family=Bungee+Inline&display=swap');
     @import '../styles/palette';
     @import '../styles/bgMixin';
+    @import '../styles/breakpoints';
     
     html,
     body {
@@ -120,12 +125,25 @@ export default {
     .app-panels {
         display: flex;
         align-content: stretch;
+
+        @media only screen and (max-width: 1020px) {
+            display: block;
+        }
+
+        h3 {
+            font-size: 150%;
+        }
     }
 
     .app-panel {
         width: 50vw;
         min-height: 100vh;
         padding-top: 1rem;
+
+        @media only screen and (max-width: 1020px) {
+            width: 100%;
+            margin: 0 auto;
+        }
     }
 
     #kennel {
