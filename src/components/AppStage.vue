@@ -3,8 +3,16 @@
     <h1>{{ headline }}</h1>
     <h2>{{ subHeadline }}</h2>
     <section class="app-panels">
-      <DogSearch id="dog-search" class="app-panel" />
-      <Kennel id="kennel" class="app-panel" />
+      <DogSearch 
+        id="dog-search" 
+        class="app-panel" 
+        v-on:newDogForKennel="addDogToKennel"
+      />
+      <Kennel 
+          id="kennel" 
+          class="app-panel" 
+          :dogs="kennelRoster"
+      />
     </section>
   </main>
 </template>
@@ -14,7 +22,7 @@ import DogSearch from './DogSearch.vue';
 import Kennel from './Kennel.vue';
 
 export default {
-  name: 'HelloWorld',
+  name: 'AppStage',
   components: {
     DogSearch,
     Kennel
@@ -25,7 +33,13 @@ export default {
   data() {
     return {
       headline: 'Dogtastic',
-      subHeadline: 'Name and Claim Your Own Cyber Kennel'
+      subHeadline: 'Name and Claim Your Own Cyber Kennel',
+      kennelRoster:  []
+    }
+  },
+  methods: {
+    addDogToKennel (dog) {
+        this.kennelRoster.push(dog);
     }
   }
 }
@@ -71,7 +85,7 @@ export default {
   }
 
   .app-panel {
-    width: 100%;
+    width: 50vw;
     border: 1px solid black;
     min-height: 100vh;
     padding-top: 1rem;
