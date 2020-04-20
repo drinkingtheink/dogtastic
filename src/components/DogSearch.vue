@@ -21,9 +21,8 @@
         <div class="name-gallery">
             <button 
                 v-for="(name, index) in names" 
-                :key="name" 
+                :key="`dog-name-${index}`"
                 class="name"
-                :class="index"
                 v-on:click="sendDogToKennel(name)"
             >
                 {{ name }}

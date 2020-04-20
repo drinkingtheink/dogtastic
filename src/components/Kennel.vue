@@ -10,7 +10,7 @@
                 v-on:removeDogFromKennel="removeDogFromKennel"
             />
         </section>
-        <p v-else>-- Add a Pooch to Your Stable --</p>
+        <p v-else>{{ emptyKennelMessage }}</p>
 
 
         <svg v-if="!dogCount" class="dog-illo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 269 239">
@@ -39,6 +39,7 @@
         data() {
             return {
                 title: 'Your Pooch Stable',
+                emptyKennelMessage: '-- There is a sad lack of pooches in your stable --'
             }
         },
         computed: {
@@ -67,6 +68,6 @@
 
     .dog-illo {
         max-width: 30%;
-        opacity: .7;
+        opacity: .5;
     }
 </style>
