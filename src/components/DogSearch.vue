@@ -186,6 +186,10 @@
         color: white;
         font-weight: bold;
         font-size: 130%;
+
+        @media only screen and (max-width: 700px) {
+            top: 6rem;
+        }
     }
 
     .name {
