@@ -128,6 +128,7 @@
 
 <style lang="scss" scoped>
     @import '../styles/palette';
+    @import '../styles/transitions';
 
     .name-gallery {
         display: flex;
@@ -160,7 +161,7 @@
             width: $largeDim;
         }
 
-        @media only screen and (max-width: 800px) {
+        @media only screen and (max-width: 1280px) {
             height: $smlDim;
             width: $smlDim;
         }
@@ -188,7 +189,7 @@
         font-weight: bold;
         font-size: 130%;
 
-        @media only screen and (max-width: 700px) {
+        @media only screen and (max-width: 1300px) {
             top: 6rem;
         }
     }
@@ -200,6 +201,7 @@
         transition: all .2s;
         font-size: 120%;
         opacity: 1;
+        animation: slowAppear .5s;
 
         &:hover {
             cursor: pointer;
@@ -208,7 +210,7 @@
             border-color: $green2;
         }
 
-        @media only screen and (max-width: 1020px) {
+        @media only screen and (max-width: 1300px) {
             font-size: 100%;
         }
 

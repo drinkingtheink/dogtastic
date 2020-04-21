@@ -66,6 +66,7 @@ export default {
         padding: 0;
         margin: 0;
         font-size: 16pt;
+        font-family: 'Open Sans', sans-serif;
     }
 
     body {
@@ -98,6 +99,8 @@ export default {
         transition: all .2s;
         border-radius: 10px;
         opacity: .7;
+        color: $green2;
+        font-family: 'Open Sans', sans-serif;
 
         &:hover {
             cursor: pointer;
@@ -148,6 +151,12 @@ export default {
         @media only screen and (max-width: 1020px) {
             width: 100vw;
             margin: 0 auto;
+        }
+
+        @media only screen and (max-width: 1300px) {
+            h3 {
+                font-size: 1em;
+            }
         }
     }
 
