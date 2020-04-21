@@ -154,6 +154,7 @@ export default {
     #kennel {
         @include yellowBg;
         border-radius: 20px;
+        padding-bottom: 2rem;
 
         @media only screen and (max-width: 800px) {
             margin-top: 1rem;

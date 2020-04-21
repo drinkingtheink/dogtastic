@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3>{{ title }}</h3>
+        <h3 class="kennel-count-display">Caring for {{ dogCount }} pooch<span v-if="dogCount > 1 || dogCount < 1">es</span></h3>
 
         <section class="dog-display" v-if="dogCount > 0">
             <DogCard
