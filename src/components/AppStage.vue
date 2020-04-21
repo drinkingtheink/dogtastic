@@ -120,9 +120,10 @@ export default {
         padding-bottom: .25rem;
         margin-bottom: 1rem;
         color: $green2;
+        font-size: 1.5em;
 
-        @media only screen and (max-width: 800) {
-            font-size: 90%;
+        @media only screen and (max-width: 800px) {
+            font-size: 1em;
         }
     }
 
@@ -154,7 +155,7 @@ export default {
         @include yellowBg;
         border-radius: 20px;
 
-        @media only screen and (max-width: 800) {
+        @media only screen and (max-width: 800px) {
             margin-top: 1rem;
         }
     }

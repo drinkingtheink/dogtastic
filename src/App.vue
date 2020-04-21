@@ -34,6 +34,10 @@
         justify-content: center;
         padding: 2rem 0;
 
+        @media only screen and (max-width: 800px) {
+            display: block;
+        }
+
         a {
             text-decoration: none;
             font-size: 80%;
@@ -44,6 +48,12 @@
             border-radius: 5px;
             color: white;
             font-family: 'Bungee Inline', cursive;
+            text-align: center;
+
+            @media only screen and (max-width: 800px) {
+                display: block;
+                margin-bottom: .5rem;
+            }
 
             &:hover {
                 background-color: $green2;
