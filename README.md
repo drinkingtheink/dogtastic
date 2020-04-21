@@ -1,4 +1,8 @@
-# dogtastic
+# Dogtastic! Name and Claim Your Own Cyper Kennel
+
+![Dogtastic! in Action](https://gdurl.com/Iuxd)
+
+### Dog images provided by [Dog API](https://dog.ceo/dog-api/)
 
 ## Project setup
 ```
