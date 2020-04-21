@@ -152,6 +152,7 @@
         border: 4px solid $green;
         background-color: rgba(white, .5);
         background-size: cover;
+        background-position: center;
         margin: 0 auto;
 
         @media only screen and (max-width: 1020px) {

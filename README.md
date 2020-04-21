@@ -1,6 +1,6 @@
 # Dogtastic! Name and Claim Your Own Cyper Kennel
 
-![Dogtastic! in Action](https://i.ibb.co/3mDqkgC/dogtastic.png)
+![Dogtastic! in Action](https://i.ibb.co/BG63JDh/dogtastic.png)
 
 
 ### Dog images provided by [Dog API](https://dog.ceo/dog-api/)
