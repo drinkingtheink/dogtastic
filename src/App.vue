@@ -15,7 +15,10 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import './styles/palette';
+    @import './styles/typog';
+
     #app {
         font-family: Avenir, Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -23,6 +26,29 @@
         text-align: center;
         color: #2c3e50;
         margin-top: .5rem;
+    }
+
+    footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+
+        a {
+            text-decoration: none;
+            font-size: 80%;
+            padding: .5rem 1rem;
+            background-color: $green;
+            margin: 0 .25rem;
+            transition: all .2s;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Bungee Inline', cursive;
+
+            &:hover {
+                background-color: $green2;
+            }
+        }
     }
 
     .fade-enter-active, .fade-leave-active {

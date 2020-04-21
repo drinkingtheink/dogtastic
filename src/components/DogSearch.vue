@@ -8,7 +8,11 @@
         >New Dog, Please</button>
 
         <div class="img-stage">
-            <img class="dog-img" v-bind:class="{ 'in-process': inProcess }" :src="dogImage" />
+            <div 
+                class="dog-img" 
+                v-bind:class="{ 'in-process': inProcess }" 
+                v-bind:style="{ 'background-image': 'url(' + dogImage + ')' }"
+            ></div>
             
             <transition name="fade">
                 <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
@@ -43,6 +47,7 @@
 
     const numberOfNames = 10;
     const transitionTime = 750;
+    const justUnderTransition = transitionTime - 100;
 
     export default {
         name: 'DogSearch',
@@ -94,12 +99,12 @@
                 newDog.dogImage = this.dogImage;
                 newDog.name = name;
                 this.selectedName = name;
+                this.removeNameFromList(name);
                 this.emitDogToKennel(newDog);
 
                 setTimeout(() => this.dogCleanup(), transitionTime);
             },
-            dogCleanup (dogName) {
-                this.removeNameFromList(dogName);
+            dogCleanup () {
                 this.fetchDogs();
                 this.clearSelectedName();
             },
@@ -111,7 +116,7 @@
                 this.$emit('newDogForKennel', dog);
             },
             clearSelectedName () {
-                setTimeout(() => this.selectedName = null, transitionTime);
+                setTimeout(() => this.selectedName = null, justUnderTransition);
             }
         },
         mounted() {
@@ -135,12 +140,29 @@
         margin-bottom: .25rem;
     }
 
+    $largeDim: 20em;
+    $medDim: 18em;
+    $smlDim: 15em;
+
     .dog-img {
-        max-width: 90%;
-        min-height: 20em;
+        height: $largeDim;
+        width: $largeDim;
         transition: all .2s;
         border-radius: 50%;
         border: 4px solid $green;
+        background-color: rgba(white, .5);
+        background-size: cover;
+        margin: 0 auto;
+
+        @media only screen and (max-width: 1020px) {
+            height: $largeDim;
+            width: $largeDim;
+        }
+
+        @media only screen and (max-width: 800px) {
+            height: $smlDim;
+            width: $smlDim;
+        }
     }
 
     .dog-img.in-process {
@@ -154,9 +176,10 @@
 
     .dog-selected-name {
         position: absolute;
+        padding: 1rem 0;
         left: 0;
         right: 0;
-        bottom: 2rem;
+        top: 12rem;
         text-align: center;
         width: 100%;
         background-color: $green;
@@ -178,6 +201,14 @@
             background-color: #333;
             color: white;
             border-color: $green2;
+        }
+
+        @media only screen and (max-width: 1020px) {
+            font-size: 100%;
+        }
+
+        @media only screen and (max-width: 800px) {
+            font-size: 90%;
         }
     }
 

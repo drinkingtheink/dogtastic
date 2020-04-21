@@ -56,7 +56,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-    @import url('https://fonts.googleapis.com/css?family=Bungee+Inline&display=swap');
+    @import '../styles/typog';
     @import '../styles/palette';
     @import '../styles/bgMixin';
     @import '../styles/breakpoints';
@@ -113,13 +113,17 @@ export default {
     }
 
     .app-headline {
-        font-size: 330%;
+        font-size: 200%;
     }
 
     .app-subheadline {
         padding-bottom: .25rem;
         margin-bottom: 1rem;
         color: $green2;
+
+        @media only screen and (max-width: 800) {
+            font-size: 90%;
+        }
     }
 
     .app-panels {
@@ -149,6 +153,10 @@ export default {
     #kennel {
         @include yellowBg;
         border-radius: 20px;
+
+        @media only screen and (max-width: 800) {
+            margin-top: 1rem;
+        }
     }
 
     .fade-enter-active, .fade-leave-active {
