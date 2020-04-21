@@ -37,7 +37,7 @@
         props: ['dogs'],
         data() {
             return {
-                title: 'Your Pooch Stable',
+                title: 'Your Pooch Kennel',
                 emptyKennelMessage: '-- There is a sad lack of pooches in your kennel --'
             }
         },
