@@ -1,4 +1,4 @@
-# Dogtastic! Name and Claim Your Own Cyper Kennel
+# Dogtastic! Name and Claim Your Own Cyber Kennel
 
 ![Dogtastic! in Action](https://i.ibb.co/BG63JDh/dogtastic.png)
 
