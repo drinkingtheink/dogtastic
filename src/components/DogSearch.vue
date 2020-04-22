@@ -15,6 +15,10 @@
             ></div>
             
             <transition name="fade">
+                <Bubbles v-if="selectedName" />
+            </transition>
+            
+            <transition name="fade">
                 <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
                 </p>
             </transition>
@@ -43,14 +47,18 @@
 </template>
 
 <script>
+    import Bubbles from './Bubbles';
     import nameList from '../fixtures/names';
 
     const numberOfNames = 10;
-    const transitionTime = 750;
+    const transitionTime = 1000;
     const justUnderTransition = transitionTime - 100;
 
     export default {
-        name: 'DogSearch',
+        name: 'DogSearh',
+        components: {
+            Bubbles
+        },
         data() {
             return {
                 title: 'Name that Pooch',
@@ -161,7 +169,7 @@
             width: $largeDim;
         }
 
-        @media only screen and (max-width: 1280px) {
+        @media only screen and (max-width: 1300px) {
             height: $smlDim;
             width: $smlDim;
         }

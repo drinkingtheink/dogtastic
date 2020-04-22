@@ -60,6 +60,7 @@ export default {
     @import '../styles/palette';
     @import '../styles/bgMixin';
     @import '../styles/breakpoints';
+    @import '../styles/transitions';
     
     html,
     body {
@@ -71,6 +72,11 @@ export default {
 
     body {
         @include funBg;
+        padding: 0 1rem;
+
+        @media only screen and (max-width: 800px) {
+            padding: 0 0;
+        }
     }
 
 
@@ -121,12 +127,15 @@ export default {
 
     .app-subheadline {
         padding-bottom: .25rem;
-        margin-bottom: 1rem;
         color: $green2;
-        font-size: 1.5em;
+        font-size: 1em;
+
+        @media only screen and (max-width: 1300px) {
+            font-size: .8em;
+        }
 
         @media only screen and (max-width: 800px) {
-            font-size: 1em;
+            font-size: .6em;
         }
     }
 
@@ -167,13 +176,7 @@ export default {
 
         @media only screen and (max-width: 800px) {
             margin-top: 1rem;
+            border-radius: none;
         }
-    }
-
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s;
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-        opacity: 0;
     }
 </style>
