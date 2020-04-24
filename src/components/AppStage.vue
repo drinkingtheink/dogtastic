@@ -72,10 +72,10 @@ export default {
 
     body {
         @include funBg;
-        padding: 0 1rem;
+        padding-right: 1rem;
 
         @media only screen and (max-width: 800px) {
-            padding: 0 0;
+            padding-right: none;
         }
     }
 
@@ -107,6 +107,7 @@ export default {
         opacity: .7;
         color: $green2;
         font-family: 'Open Sans', sans-serif;
+        border: 0;
 
         &:hover {
             cursor: pointer;

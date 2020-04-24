@@ -29,11 +29,15 @@
 
     .dog-card {
         border: 2px solid $green;
-        height: 10rem;
-        width: 10em;
+        height: 12rem;
+        width: 44%;
         position: relative;
         margin: .2rem;
         background-size: cover;
+
+        @media only screen and (max-width: 600px) {
+            width: 80%;
+        }
 
         &:hover {
             .remove-dog {

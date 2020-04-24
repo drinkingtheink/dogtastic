@@ -26,7 +26,7 @@
 
         <h4>{{ headline }}</h4>
 
-        <div class="name-gallery">
+        <div class="name-gallery" :class="{ 'prevent': selectedName }">
             <button 
                 v-for="(name, index) in names" 
                 :key="`dog-name-${index}`"
@@ -143,6 +143,13 @@
         flex-wrap: wrap;
         align-content: center;
         justify-content: center;
+        opacity: 1;
+        transition: all .2s;
+
+        &.prevent{
+            opacity: .6;
+            pointer-events: none;
+        }
     }
 
     .fetch-dogs {
@@ -210,6 +217,7 @@
         font-size: 120%;
         opacity: 1;
         animation: slowAppear .5s;
+        background-color: white;
 
         &:hover {
             cursor: pointer;
