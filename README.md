@@ -4,6 +4,7 @@
 
 
 ### Dog images provided by [Dog API](https://dog.ceo/dog-api/)
+### Background patterns by [Hero Patterns](https://www.heropatterns.com/)
 
 ## Project setup
 ```
