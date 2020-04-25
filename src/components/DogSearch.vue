@@ -27,14 +27,16 @@
         <h4>{{ headline }}</h4>
 
         <div class="name-gallery" :class="{ 'prevent': selectedName }">
-            <button 
-                v-for="(name, index) in names" 
-                :key="`dog-name-${index}`"
-                class="name"
-                v-on:click="sendDogToKennel(name)"
-            >
-                {{ name }}
-            </button>
+            <transition-group tag="div" class="name-tg" name="list">
+                <button 
+                    v-for="(name, index) in names" 
+                    :key="`dog-name-${index}`"
+                    class="name"
+                    v-on:click="sendDogToKennel(name)"
+                >
+                    {{ name }}
+                </button>
+            </transition-group>
         </div>
 
         <button 
@@ -55,7 +57,7 @@
     const justUnderTransition = transitionTime - 100;
 
     export default {
-        name: 'DogSearh',
+        name: 'DogSearch',
         components: {
             Bubbles
         },
@@ -149,6 +151,10 @@
         &.prevent{
             opacity: .6;
             pointer-events: none;
+        }
+
+        .name-tg {
+            width:100%;
         }
     }
 
