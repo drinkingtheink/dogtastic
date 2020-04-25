@@ -154,7 +154,11 @@
         }
 
         .name-tg {
-            width:100%;
+            width: 100%;
+
+            button {
+                display: inline-block;
+            }
         }
     }
 
