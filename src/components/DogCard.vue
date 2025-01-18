@@ -3,12 +3,20 @@
         class="dog-card"
         :style="{ backgroundImage: `url('${dog.dogImage}')` }"
     >
-        <p class="dog-card-name">{{ dog.name }}</p>
+        <p class="dog-card-name" @click="showFullImg = true">{{ dog.name }}</p>
 
         <button 
             v-on:click="removeDogFromKennel(dog)"
             class="remove-dog"
         >Remove X</button>
+
+        <dialog v-show='showFullImg'>
+            <img class="full-img" :style="{ backgroundImage: `url('${dog.dogImage}')` }" />
+            <button 
+                v-on:click="showFullImg = false"
+                class="remove-full-img"
+            >Close</button>
+        </dialog>
     </div>
 </template>
 
@@ -16,6 +24,11 @@
     export default {
         name: 'DogCard',
         props: ['dog'],
+        data() {
+            return {
+                showFullImg: false
+            }
+        },
         methods: {
             removeDogFromKennel (dog) {
                 this.$emit('removeDogFromKennel', dog);

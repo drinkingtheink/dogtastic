@@ -8,7 +8,6 @@
                 :key="`dog-${index}')`"
                 :dog="dog"
                 v-on:removeDogFromKennel="removeDogFromKennel"
-                @click="showFullImg = true"
             />
         </section>
         <p v-else>{{ emptyKennelMessage }}</p>
@@ -24,10 +23,6 @@
         >
             Empty Kennel
         </button>
-
-        <dialog v-show='showFullImg'>
-            <img class="full-img" :style="{ backgroundImage: `url('${dog.dogImage}')` }" />
-        </dialog>
     </div>
 </template>
 
@@ -44,7 +39,6 @@
             return {
                 title: 'Your Pooch Kennel',
                 emptyKennelMessage: '-- There is a sad lack of pooches in your kennel --',
-                showFullImg: false,
             }
         },
         computed: {
