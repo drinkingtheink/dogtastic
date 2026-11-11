@@ -1,129 +1,133 @@
 <template>
-  <div class="pup-decor" :class="[theme, { animated }]" aria-hidden="true">
+  <div
+    class="pup-decor"
+    :class="[theme, { animated, movable }]"
+    :style="{ transform: `translate(${offset.x}%, ${offset.y}%)` }"
+    :aria-hidden="movable ? null : 'true'"
+    :role="movable ? 'group' : null"
+    :aria-label="movable ? `Decorations reading ${motif.caption}. Drag to move.` : null"
+    @pointerdown="startDrag"
+    @pointermove="onDrag"
+    @pointerup="endDrag"
+    @pointercancel="endDrag"
+  >
     <span
-      v-for="item in items"
+      v-for="item in motif.items"
       :key="item.id"
       class="decor"
       :class="item.kind"
-      :style="item.style"
+      :style="styleFor(item)"
     >{{ item.glyph }}</span>
 
     <p v-if="caption" class="decor-caption" :style="captionStyle">
-      {{ captionText }}
+      {{ motif.caption }}
     </p>
   </div>
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
+import { buildMotif } from '../utils/motif'
+
 const props = defineProps({
-  count: {
-    type: Number,
-    default: 18
-  },
+  count: { type: Number, default: 18 },
   /** Still for a photo you are looking at; drifting for one that plays. */
-  animated: {
-    type: Boolean,
-    default: false
-  },
-  /** Which surface it sits on, which decides the colours. */
-  theme: {
-    type: String,
-    default: 'light'
-  },
-  /**
-   * 'scatter' rings the frame; 'cluster' gathers everything into the
-   * bottom-left so a photo is decorated rather than covered.
-   */
-  layout: {
-    type: String,
-    default: 'scatter'
-  },
-  /** Adds a sticker-ish caption in among the glyphs. */
-  caption: {
-    type: Boolean,
-    default: false
-  }
+  animated: { type: Boolean, default: false },
+  theme: { type: String, default: 'light' },
+  /** 'scatter' rings the frame; 'cluster' gathers it into the bottom-left. */
+  layout: { type: String, default: 'scatter' },
+  caption: { type: Boolean, default: false },
+  /** Keeps a dog's arrangement the same between visits. */
+  seed: { type: [String, Number], default: null },
+  /** Where the whole group sits, as a percentage nudge from where it was. */
+  offsetX: { type: Number, default: 0 },
+  offsetY: { type: Number, default: 0 },
+  movable: { type: Boolean, default: false }
 })
 
-const CAPTIONS = [
-  'My Boo',
-  'Da Best',
-  'Certified Floof',
-  '10/10 would pet',
-  'Absolute Unit',
-  'Top Dog',
-  'Heckin Cute',
-  'Mayor of My Heart',
-  'No Notes',
-  'Smol Bean',
-  'Best in Show',
-  'Pure of Heart',
-  'Employee of the Month',
-  'Wow. Just Wow.',
-  'Simply The Finest'
-]
+const emit = defineEmits(['move'])
 
-const HEARTS = ['♥', '❤']
-const SPARKLES = ['✦', '✧', '✴']
-
-const PALETTES = {
-  light: ['#25bea0', '#12836d', '#fabc09', '#08705b'],
-  dark: ['#ffffff', '#facc43', '#25bea0', '#fabc09']
-}
-
-const rand = (min, max) => min + Math.random() * (max - min)
-const pick = list => list[Math.floor(Math.random() * list.length)]
-
-/* Keeps the middle of the frame clear, because that is where the dog is.
-   Falls through after a few tries rather than looping forever. */
-function scatter () {
-  for (let attempt = 0; attempt < 12; attempt++) {
-    const x = rand(3, 97)
-    const y = rand(3, 97)
-    if (Math.abs(x - 50) > 26 || Math.abs(y - 50) > 31) return { x, y }
-  }
-  return { x: rand(3, 14), y: rand(3, 97) }
-}
-
-/* Gathered into the bottom-left. Squaring the random thickens the pile
-   toward the corner instead of spreading it evenly over a quarter. */
-function cluster () {
-  return {
-    x: 4 + Math.random() ** 1.7 * 38,
-    y: 90 - Math.random() ** 1.7 * 38
-  }
-}
-
-const items = Array.from({ length: props.count }, (_, id) => {
-  const isHeart = Math.random() < 0.45
-  const { x, y } = props.layout === 'cluster' ? cluster() : scatter()
-
-  return {
-    id,
-    kind: isHeart ? 'heart' : 'sparkle',
-    glyph: isHeart ? pick(HEARTS) : pick(SPARKLES),
-    style: {
-      left: `${x}%`,
-      top: `${y}%`,
-      fontSize: `${rand(1.3, 3.1).toFixed(2)}rem`,
-      color: pick(PALETTES[props.theme] ?? PALETTES.light),
-      '--rot': `${rand(-28, 28).toFixed(1)}deg`,
-      '--dur': `${rand(2.4, 4.6).toFixed(2)}s`,
-      '--delay': `${rand(0, 2.4).toFixed(2)}s`,
-      opacity: rand(0.55, 1).toFixed(2)
-    }
-  }
+const motif = buildMotif({
+  seed: props.seed,
+  count: props.count,
+  layout: props.layout,
+  theme: props.theme
 })
 
-const captionText = pick(CAPTIONS)
+const preview = ref(null)
+let origin = null
 
-/* Sits in the thick of the pile rather than beside it, tilted so it reads
-   as a sticker someone slapped on. */
-const captionStyle = {
-  left: `${rand(5, 11).toFixed(1)}%`,
-  bottom: `${rand(16, 26).toFixed(1)}%`,
-  '--rot': `${rand(-9, 5).toFixed(1)}deg`
+const offset = computed(() => preview.value ?? { x: props.offsetX, y: props.offsetY })
+
+function styleFor (item) {
+  return {
+    left: `${item.x}%`,
+    top: `${item.y}%`,
+    fontSize: `${item.rem}rem`,
+    color: item.color,
+    opacity: item.opacity,
+    '--rot': `${item.rotation}deg`,
+    '--dur': `${item.duration}s`,
+    '--delay': `${item.delay}s`
+  }
 }
+
+const captionStyle = computed(() => ({
+  left: `${motif.captionX}%`,
+  bottom: `${motif.captionBottom}%`,
+  '--rot': `${motif.captionRotation}deg`
+}))
+
+/* Kept within the frame, so the motif cannot be dragged out of sight. */
+const clamp = value => Math.min(45, Math.max(-45, value))
+
+function startDrag (event) {
+  if (!props.movable) return
+
+  origin = {
+    pointerX: event.clientX,
+    pointerY: event.clientY,
+    x: offset.value.x,
+    y: offset.value.y,
+    width: event.currentTarget.clientWidth,
+    height: event.currentTarget.clientHeight
+  }
+
+  try {
+    event.currentTarget.setPointerCapture(event.pointerId)
+  } catch {
+    // Dragging still works, it just stops at the frame's edge.
+  }
+}
+
+function onDrag (event) {
+  if (!origin) return
+
+  preview.value = {
+    x: clamp(origin.x + ((event.clientX - origin.pointerX) / origin.width) * 100),
+    y: clamp(origin.y + ((event.clientY - origin.pointerY) / origin.height) * 100)
+  }
+}
+
+function endDrag (event) {
+  if (!origin) return
+  origin = null
+
+  // Save before releasing: releasing a capture the browser is no longer
+  // tracking throws, and that would take the save with it.
+  if (preview.value) {
+    emit('move', preview.value)
+    preview.value = null
+  }
+
+  try {
+    event.currentTarget.releasePointerCapture(event.pointerId)
+  } catch {
+    // Already released, or never captured.
+  }
+}
+
+defineExpose({ motif })
 </script>
 
 <style scoped>
@@ -133,6 +137,15 @@ const captionStyle = {
   overflow: hidden;
   pointer-events: none;
   z-index: 2;
+}
+
+.pup-decor.movable {
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.pup-decor.movable:active {
+  cursor: grabbing;
 }
 
 .decor {

@@ -48,10 +48,15 @@
       <div class="full-img-frame">
         <PupDecor
           v-if="fullImgOpen"
-          :count="16"
+          :count="MOTIF_COUNT"
+          :seed="dog.id"
+          :offset-x="dog.motifX ?? 0"
+          :offset-y="dog.motifY ?? 0"
           theme="light"
           layout="cluster"
           caption
+          movable
+          @move="moveMotif"
         />
 
         <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
@@ -60,9 +65,19 @@
         <strong>{{ dog.name }}</strong>
         <span v-if="dog.breed"> &middot; {{ dog.breed }}</span>
       </p>
-      <button class="remove-full-img primary" @click="dialogEl.close()">
-        Close
-      </button>
+      <div class="full-img-actions">
+        <button class="primary" :disabled="saving" @click="save">
+          {{ saving ? 'Saving...' : 'Download' }}
+        </button>
+
+        <button class="utility" @click="dialogEl.close()">
+          Close
+        </button>
+      </div>
+
+      <p v-if="saveError" class="full-img-error">
+        Could not save that one. Try again?
+      </p>
     </dialog>
   </div>
 </template>
@@ -70,6 +85,7 @@
 <script setup>
 import { ref, computed, onBeforeUnmount, useTemplateRef } from 'vue'
 import PupDecor from './PupDecor.vue'
+import { downloadCard } from '../utils/downloadCard'
 import { useImageStatus } from '../composables/useImageStatus'
 
 const props = defineProps({
@@ -79,7 +95,39 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['removeDogFromKennel', 'repositionDog'])
+const emit = defineEmits(['removeDogFromKennel', 'repositionDog', 'moveMotif'])
+
+const MOTIF_COUNT = 16
+
+const saving = ref(false)
+const saveError = ref(false)
+
+function moveMotif (offset) {
+  emit('moveMotif', { id: props.dog.id, motifX: offset.x, motifY: offset.y })
+}
+
+async function save () {
+  saving.value = true
+  saveError.value = false
+
+  try {
+    // Measured, so the export matches the arrangement on screen rather
+    // than guessing at a reference size.
+    const photo = dialogEl.value?.querySelector('.full-img')
+    const caption = dialogEl.value?.querySelector('.decor-caption')
+
+    await downloadCard(props.dog, {
+      count: MOTIF_COUNT,
+      theme: 'light',
+      displayWidth: photo?.clientWidth ?? 0,
+      captionPx: caption ? parseFloat(getComputedStyle(caption).fontSize) : 0
+    })
+  } catch {
+    saveError.value = true
+  } finally {
+    saving.value = false
+  }
+}
 
 const STEP = 0.06
 
@@ -427,8 +475,22 @@ function closeOnBackdrop (event) {
   font-size: var(--text-sm);
 }
 
-.remove-full-img {
+.full-img-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
   margin-top: var(--space-4);
+}
+
+.full-img-actions button {
+  margin: 0;
+}
+
+.full-img-error {
+  margin: var(--space-3) 0 0;
+  color: var(--color-green-dark);
+  font-size: var(--text-sm);
+  text-align: center;
 }
 
 @media only screen and (max-width: 600px) {

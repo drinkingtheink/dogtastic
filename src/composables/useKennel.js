@@ -70,6 +70,15 @@ export function useKennel () {
     dog.focusY = focusY
   }
 
+  /** Where the hearts-and-sparkles motif sits on this dog's close-up. */
+  function setMotif (id, motifX, motifY) {
+    const dog = roster.value.find(entry => entry.id === id)
+    if (!dog) return
+
+    dog.motifX = motifX
+    dog.motifY = motifY
+  }
+
   function remove (dog) {
     roster.value = roster.value.filter(kennelDog => kennelDog.id !== dog.id)
   }
@@ -78,5 +87,5 @@ export function useKennel () {
     roster.value = []
   }
 
-  return { roster, count, breedCount, add, remove, clear, setFocus }
+  return { roster, count, breedCount, add, remove, clear, setFocus, setMotif }
 }

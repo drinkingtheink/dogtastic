@@ -38,6 +38,7 @@
         :dog="dog"
         @remove-dog-from-kennel="emit('removeDogFromKennel', $event)"
         @reposition-dog="emit('repositionDog', $event)"
+        @move-motif="emit('moveMotif', $event)"
       />
     </TransitionGroup>
 
@@ -92,7 +93,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(["removeDogFromKennel", "clearKennel", "repositionDog"])
+const emit = defineEmits(["removeDogFromKennel", "clearKennel", "repositionDog", "moveMotif"])
 
 const dogCount = computed(() => props.dogs.length)
 
