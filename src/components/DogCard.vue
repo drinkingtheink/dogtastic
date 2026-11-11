@@ -59,7 +59,12 @@
           @move="moveMotif"
         />
 
-        <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
+        <img
+          class="full-img"
+          :src="dog.image"
+          :alt="`${dog.name}, at full size`"
+          draggable="false"
+        >
       </div>
       <p class="full-img-caption">
         <strong>{{ dog.name }}</strong>
@@ -349,6 +354,10 @@ function closeOnBackdrop (event) {
 .dog-card {
   cursor: grab;
   touch-action: none;
+  /* Dragging to reframe was selecting the name and breed under the
+     pointer, which flashed a highlight across the card. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .dog-card.dragging {
@@ -464,6 +473,9 @@ function closeOnBackdrop (event) {
 
 .full-img {
   display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
   max-width: 100%;
   max-height: 70vh;
   border-radius: var(--radius-md);

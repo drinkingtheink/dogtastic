@@ -142,6 +142,10 @@ defineExpose({ motif })
 .pup-decor.movable {
   pointer-events: auto;
   cursor: grab;
+  /* Same reason as the card: dragging the motif was highlighting its own
+     caption as the pointer crossed it. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .pup-decor.movable:active {
