@@ -177,7 +177,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   margin: 0.6rem auto 0;
   padding: 0.2rem 0.9rem;
   border-radius: 999px;
-  background-color: var(--color-green);
+  background-color: var(--color-green-plate);
   color: var(--color-surface);
   font-size: 75%;
   font-weight: bold;
@@ -219,7 +219,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   top: 12rem;
   text-align: center;
   width: 100%;
-  background-color: var(--color-green);
+  background-color: var(--color-green-plate);
   color: var(--color-surface);
   font-weight: bold;
   font-size: 130%;

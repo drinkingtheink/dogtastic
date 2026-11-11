@@ -7,8 +7,14 @@
   --color-yellow: #fabc09;
   --color-yellow-light: #facc43;
   --color-gray: #374353;
-  --color-green: #25bea0;
-  --color-green-dark: #08705b;
+
+  /* Brand greens, split by role. The bright teal is only 2.35:1 on white,
+     which fails WCAG AA, so it decorates and never carries text. The
+     darker steps do the reading work. */
+  --color-green: #25bea0;        /* fills, borders, rings, confetti */
+  --color-green-text: #1a8570;   /* 4.53:1 on white  - teal text */
+  --color-green-plate: #12836d;  /* 4.67:1 under white text */
+  --color-green-dark: #08705b;   /* 6.04:1 on white  - strongest */
 
   --color-ink: #2c3e50;
   --color-surface: #ffffff;

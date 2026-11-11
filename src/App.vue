@@ -37,7 +37,7 @@ footer a {
   text-decoration: none;
   font-size: 80%;
   padding: 0.5rem 1rem;
-  background-color: var(--color-green);
+  background-color: var(--color-green-plate);
   margin: 0 0.25rem;
   transition: all 0.2s;
   border-radius: var(--radius-sm);

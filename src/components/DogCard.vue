@@ -95,7 +95,7 @@ function closeOnBackdrop (event) {
   position: absolute;
   bottom: -1rem;
   left: 0;
-  background-color: var(--color-green);
+  background-color: var(--color-green-plate);
   color: var(--color-surface);
   width: 100%;
   padding: 0.2rem 0;
