@@ -26,6 +26,10 @@
 
     <h4>{{ PROMPT }}</h4>
 
+    <p v-if="namesLoading && !names.length" class="names-loading">
+      Rounding up some names...
+    </p>
+
     <div class="name-gallery" :class="{ prevent: selectedName }">
       <TransitionGroup tag="div" class="name-tg" name="list">
         <button
@@ -53,21 +57,20 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import Bubbles from './Bubbles.vue'
-import nameList from '../fixtures/names'
 import { useDogApi } from '../composables/useDogApi'
+import { useNames } from '../composables/useNames'
 
 const TITLE = 'Name that Pooch'
 const PROMPT = 'What name is worthy of this magnificent creature?'
 
-const NAMES_PER_DRAW = 10
 const CELEBRATION_MS = 1000
 const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 
 const emit = defineEmits(['newDogForKennel'])
 
 const { image, loading, error, fetchDog } = useDogApi()
+const { names, loading: namesLoading, drawNames, removeName } = useNames()
 
-const names = ref([])
 const selectedName = ref(null)
 
 const timers = []
@@ -76,20 +79,9 @@ function later (fn, ms) {
   timers.push(setTimeout(fn, ms))
 }
 
-/** Draws names without replacement, so the gallery never shows one twice. */
-function drawNames () {
-  const drawn = new Set()
-
-  while (drawn.size < NAMES_PER_DRAW && drawn.size < nameList.length) {
-    drawn.add(nameList[Math.floor(Math.random() * nameList.length)])
-  }
-
-  names.value = [...drawn]
-}
-
 function claimDog (name) {
   selectedName.value = name
-  names.value = names.value.filter(candidate => candidate !== name)
+  removeName(name)
 
   emit('newDogForKennel', { name, image: image.value })
 
@@ -136,6 +128,11 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .fetch-dogs {
   margin-bottom: 0.25rem;
+}
+
+.names-loading {
+  color: var(--color-green-dark);
+  font-size: 80%;
 }
 
 .dog-img {
