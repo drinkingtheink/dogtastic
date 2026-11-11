@@ -1,23 +1,21 @@
 <template>
   <main>
     <section class="app-panels">
-      <div class="naming-column app-panel">
-        <header class="app-header">
-          <h1 class="app-headline">
-            <span>Dog</span><span>tastic!</span>
-          </h1>
-          <p class="app-tagline">{{ SUB_HEADLINE }}</p>
+      <header class="app-header">
+        <h1 class="app-headline">
+          <span>Dog</span><span>tastic!</span>
+        </h1>
+        <p class="app-tagline">{{ SUB_HEADLINE }}</p>
 
-          <BrandMark class="brand-mark-slot" />
+        <BrandMark class="brand-mark-slot" />
+      </header>
 
-          <BreedProgress :dogs="roster" />
-        </header>
+      <DogSearch
+        id="dog-search"
+        class="app-panel"
+        @new-dog-for-kennel="sendToKennel"
+      />
 
-        <DogSearch
-          id="dog-search"
-          @new-dog-for-kennel="sendToKennel"
-        />
-      </div>
       <Kennel
         id="kennel"
         ref="kennelRef"
@@ -27,6 +25,24 @@
         @remove-dog-from-kennel="remove"
         @clear-kennel="clear"
       />
+
+      <!-- These two trail the kennel in markup so a stacked layout puts them
+           at the foot of the page rather than above the dog. The grid lifts
+           them into the rail when there is a rail to lift them into. -->
+      <BreedProgress :dogs="roster" />
+
+      <footer class="colophon">
+        <a
+          href="https://github.com/drinkingtheink/dogtastic"
+          target="_blank"
+          rel="noopener noreferrer"
+        >About this Project</a>
+        <a
+          href="https://drinkingtheink.github.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >About the Author</a>
+      </footer>
     </section>
 
     <!-- Stacked layouts put the kennel a screen below, so you can name a
@@ -185,16 +201,12 @@ function landDog () {
   }
 }
 
-/* The naming panel had wide empty margins either side of the portrait, so
-   the wordmark moves into the left one and the top band disappears. */
-.naming-column {
-  display: grid;
-  grid-template-columns: minmax(7rem, 11rem) 1fr;
-  align-items: start;
-  gap: var(--space-4);
-}
-
+/* One grid for the whole stage: brand rail, naming panel, kennel, with the
+   colophon tucked under the rail. Flattened out of a nested grid so the
+   colophon can be last in the markup -- which is where a stacked layout
+   wants it, below the kennel -- while still sitting in the rail here. */
 .app-header {
+  grid-area: 1 / 1;
   padding-top: var(--space-4);
   text-align: left;
 }
@@ -215,6 +227,36 @@ function landDog () {
   color: var(--color-green-dark);
 }
 
+/* Meta-navigation, not a call to action: these used to be display-type on
+   solid green pills in a band of their own, reading louder than the
+   controls they sat beneath. */
+.colophon {
+  grid-area: 3 / 1;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-6) 0 var(--space-5);
+}
+
+.colophon a {
+  color: var(--color-green-dark);
+  font-size: var(--text-xs);
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 2px solid rgb(18 131 109 / 30%);
+  padding-bottom: 2px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.colophon a:hover {
+  color: var(--color-green-plate);
+  border-bottom-color: var(--color-green-plate);
+}
+
 .app-tagline {
   margin: var(--space-3) 0 0;
   color: var(--color-green-dark);
@@ -226,42 +268,25 @@ function landDog () {
 }
 
 /* Too narrow for a rail: the brand goes back above, on one line. */
-@media only screen and (max-width: 860px) {
-  .naming-column {
-    display: block;
-  }
 
-  .app-header {
-    padding: 0 var(--space-4) var(--space-2);
-    text-align: center;
-  }
-
-  .app-headline {
-    font-size: var(--text-2xl);
-    line-height: 1;
-  }
-
-  .app-headline span {
-    display: inline;
-  }
-
-  .app-tagline {
-    margin-top: var(--space-1);
-  }
-
-  .brand-mark-slot {
-    margin: var(--space-3) auto 0;
-  }
-}
 
 .app-panels {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-rows: auto auto 1fr;
   gap: var(--space-5);
   align-items: start;
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 var(--space-5);
+}
+
+#dog-search {
+  grid-area: 1 / 2 / span 3 / 3;
+}
+
+.breed-progress {
+  grid-area: 2 / 1;
 }
 
 /* Only the kennel still wants a billboard title; the naming column uses a
@@ -316,6 +341,7 @@ function landDog () {
 }
 
 #kennel {
+  grid-area: 1 / 3 / span 3 / 4;
   position: sticky;
   top: var(--space-4);
   max-height: calc(100vh - var(--space-6));
@@ -327,9 +353,41 @@ function landDog () {
 }
 
 @media only screen and (max-width: 1020px) {
+  /* No rail to speak of at this width: back to markup order, which puts
+     the colophon last, below the kennel. */
   .app-panels {
-    grid-template-columns: 1fr;
+    display: block;
     padding: 0 var(--space-3);
+  }
+
+  .app-header {
+    padding: 0 var(--space-4) var(--space-2);
+    text-align: center;
+  }
+
+  .app-headline {
+    font-size: var(--text-2xl);
+    line-height: 1;
+  }
+
+  .app-headline span {
+    display: inline;
+  }
+
+  .app-tagline {
+    margin-top: var(--space-1);
+  }
+
+  .brand-mark-slot {
+    margin: var(--space-3) auto 0;
+  }
+
+  .colophon {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-4);
   }
 
   /* Stacked, the kennel is just part of the page flow. */
