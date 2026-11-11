@@ -15,6 +15,9 @@
   --color-green-text: #1a8570;   /* 4.53:1 on white  - teal text */
   --color-green-plate: #12836d;  /* 4.67:1 under white text */
   --color-green-dark: #08705b;   /* 6.04:1 on white  - strongest */
+  --color-green-deep: #0f4c40;   /* for text on the yellow kennel panel:
+                                    6.48:1 on the panel, 5.76:1 on its
+                                    darker dots */
 
   --color-ink: #2c3e50;
   --color-surface: #ffffff;

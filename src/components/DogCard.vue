@@ -113,7 +113,6 @@ function closeOnBackdrop (event) {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  opacity: 0.8;
 }
 
 .dog-card-name {
@@ -139,7 +138,6 @@ function closeOnBackdrop (event) {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  opacity: 0.85;
 }
 
 .remove-dog {

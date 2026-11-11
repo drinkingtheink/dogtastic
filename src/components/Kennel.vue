@@ -107,9 +107,15 @@ function pinLeavingCard (el) {
 </script>
 
 <style scoped>
+/* Text inside the kennel sits on yellow, not white, so it needs the deep
+   green. The bright and dark greens both fall under AA against #facc43. */
+.kennel-count-display {
+  color: var(--color-green-deep);
+}
+
 .kennel-breed-count {
-  margin: 0.1rem 0 0.75rem;
-  color: var(--color-green-dark);
+  margin: var(--space-1) 0 var(--space-3);
+  color: var(--color-green-deep);
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;

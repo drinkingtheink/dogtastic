@@ -79,8 +79,10 @@ button.primary:active {
   box-shadow: var(--shadow-sm);
 }
 
+/* The bright teal is only 2.35:1 on white and 1.54:1 on the kennel yellow,
+   too weak to read as a focus indicator. The dark green clears 3:1 on both. */
 :where(button, a, input):focus-visible {
-  outline: 3px solid var(--color-green);
+  outline: 3px solid var(--color-green-dark);
   outline-offset: 2px;
 }
 
