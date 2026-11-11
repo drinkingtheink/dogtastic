@@ -7,6 +7,10 @@
       :class="item.kind"
       :style="item.style"
     >{{ item.glyph }}</span>
+
+    <p v-if="caption" class="decor-caption" :style="captionStyle">
+      {{ captionText }}
+    </p>
   </div>
 </template>
 
@@ -25,8 +29,39 @@ const props = defineProps({
   theme: {
     type: String,
     default: 'light'
+  },
+  /**
+   * 'scatter' rings the frame; 'cluster' gathers everything into the
+   * bottom-left so a photo is decorated rather than covered.
+   */
+  layout: {
+    type: String,
+    default: 'scatter'
+  },
+  /** Adds a sticker-ish caption in among the glyphs. */
+  caption: {
+    type: Boolean,
+    default: false
   }
 })
+
+const CAPTIONS = [
+  'My Boo',
+  'Da Best',
+  'Certified Floof',
+  '10/10 would pet',
+  'Absolute Unit',
+  'Top Dog',
+  'Heckin Cute',
+  'Mayor of My Heart',
+  'No Notes',
+  'Smol Bean',
+  'Best in Show',
+  'Pure of Heart',
+  'Employee of the Month',
+  'Wow. Just Wow.',
+  'Simply The Finest'
+]
 
 const HEARTS = ['♥', '❤']
 const SPARKLES = ['✦', '✧', '✴']
@@ -50,9 +85,18 @@ function scatter () {
   return { x: rand(3, 14), y: rand(3, 97) }
 }
 
+/* Gathered into the bottom-left. Squaring the random thickens the pile
+   toward the corner instead of spreading it evenly over a quarter. */
+function cluster () {
+  return {
+    x: 4 + Math.random() ** 1.7 * 38,
+    y: 90 - Math.random() ** 1.7 * 38
+  }
+}
+
 const items = Array.from({ length: props.count }, (_, id) => {
   const isHeart = Math.random() < 0.45
-  const { x, y } = scatter()
+  const { x, y } = props.layout === 'cluster' ? cluster() : scatter()
 
   return {
     id,
@@ -61,7 +105,7 @@ const items = Array.from({ length: props.count }, (_, id) => {
     style: {
       left: `${x}%`,
       top: `${y}%`,
-      fontSize: `${rand(0.7, 1.9).toFixed(2)}rem`,
+      fontSize: `${rand(1.3, 3.1).toFixed(2)}rem`,
       color: pick(PALETTES[props.theme] ?? PALETTES.light),
       '--rot': `${rand(-28, 28).toFixed(1)}deg`,
       '--dur': `${rand(2.4, 4.6).toFixed(2)}s`,
@@ -70,6 +114,16 @@ const items = Array.from({ length: props.count }, (_, id) => {
     }
   }
 })
+
+const captionText = pick(CAPTIONS)
+
+/* Sits in the thick of the pile rather than beside it, tilted so it reads
+   as a sticker someone slapped on. */
+const captionStyle = {
+  left: `${rand(5, 11).toFixed(1)}%`,
+  bottom: `${rand(16, 26).toFixed(1)}%`,
+  '--rot': `${rand(-9, 5).toFixed(1)}deg`
+}
 </script>
 
 <style scoped>
@@ -95,6 +149,30 @@ const items = Array.from({ length: props.count }, (_, id) => {
 
 .pup-decor.dark .decor {
   text-shadow: 0 1px 5px rgb(11 59 50 / 55%);
+}
+
+.decor-caption {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  max-width: 11rem;
+  transform: rotate(var(--rot));
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3.4vw, 1.6rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.pup-decor.light .decor-caption {
+  color: var(--color-green-plate);
+  text-shadow:
+    0 0 6px rgb(255 255 255 / 95%),
+    0 2px 10px rgb(255 255 255 / 85%);
+}
+
+.pup-decor.dark .decor-caption {
+  color: var(--color-surface);
+  text-shadow: 0 2px 8px rgb(11 59 50 / 70%);
 }
 
 .animated .heart {

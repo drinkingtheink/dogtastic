@@ -41,11 +41,21 @@
       @click="closeOnBackdrop"
       @close="fullImgOpen = false"
     >
-      <!-- Only while it is open: a dialog's contents render whether or not
-           it is showing, and every card has one. -->
-      <PupDecor v-if="fullImgOpen" :count="20" theme="light" />
+      <!-- Wraps the photo so the decorations land on it, rather than
+           spilling into the dialog's caption and buttons. Only mounted
+           while open: a dialog renders its contents either way, and every
+           card has one. -->
+      <div class="full-img-frame">
+        <PupDecor
+          v-if="fullImgOpen"
+          :count="16"
+          theme="light"
+          layout="cluster"
+          caption
+        />
 
-      <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
+        <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
+      </div>
       <p class="full-img-caption">
         <strong>{{ dog.name }}</strong>
         <span v-if="dog.breed"> &middot; {{ dog.breed }}</span>
@@ -334,6 +344,12 @@ function closeOnBackdrop (event) {
 
 .full-img-dialog::backdrop {
   background-color: rgb(55 67 83 / 70%);
+}
+
+.full-img-frame {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .full-img {
