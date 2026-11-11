@@ -61,13 +61,13 @@
     </Transition>
 
     <Transition name="fade">
-      <button
-        v-if="dogCount > 0"
-        class="clear-kennel primary"
-        @click="emit('clearKennel')"
-      >
-        Empty Kennel
-      </button>
+      <div v-if="dogCount > 0" class="kennel-actions">
+        <KennelReel :dogs="dogs" />
+
+        <button class="clear-kennel primary" @click="emit('clearKennel')">
+          Empty Kennel
+        </button>
+      </div>
     </Transition>
   </div>
 </template>
@@ -75,6 +75,7 @@
 <script setup>
 import { computed, onBeforeUpdate, useTemplateRef } from "vue"
 import DogCard from "./DogCard.vue"
+import KennelReel from "./KennelReel.vue"
 
 const EMPTY_MESSAGE = "-- There is a sad lack of pooches in your kennel --"
 
@@ -190,7 +191,15 @@ function pinLeavingCard (el) {
   }
 }
 
-.clear-kennel {
-  margin-top: 0.5rem;
+.kennel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+.kennel-actions :deep(button) {
+  margin: 0;
 }
 </style>
