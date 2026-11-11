@@ -6,12 +6,15 @@
       <div
         ref="portraitEl"
         class="dog-img"
-        :class="{ 'in-process': loading, 'dog-img-failed': imageFailed, celebrating: selectedName }"
+        :class="{ swapping: loading && image, celebrating: selectedName }"
         :style="portraitStyle"
       >
-        <p v-if="imageFailed" class="dog-img-fallback">
-          This pooch would not sit for a portrait
-        </p>
+        <div v-if="!image && !error" class="dog-img-skeleton" aria-hidden="true" />
+
+        <div v-else-if="error && !image" class="dog-img-error">
+          <p>This pooch would not sit for a portrait.</p>
+          <button class="primary" @click="fetchDog">Try again</button>
+        </div>
       </div>
 
       <template v-if="selectedName">
@@ -95,9 +98,8 @@
       </TransitionGroup>
     </div>
 
-    <p v-if="loading">Fetching...</p>
-    <p v-if="error" class="dog-error">
-      The Dog API is not answering right now. Try again?
+    <p v-if="error && image" class="dog-error">
+      Could not fetch a new dog just then. The one above is still yours.
     </p>
   </div>
 </template>
@@ -107,7 +109,6 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, useTemplateRef } from
 import Confetti from './Confetti.vue'
 import { useDogApi } from '../composables/useDogApi'
 import { useNames } from '../composables/useNames'
-import { useImageStatus } from '../composables/useImageStatus'
 
 const TITLE = 'Name that Pooch'
 const PROMPT = 'What name is worthy of this magnificent creature?'
@@ -118,15 +119,13 @@ const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 
 const emit = defineEmits(['newDogForKennel'])
 
-const { image, breed, loading, error, fetchDog } = useDogApi()
-const { status: imageStatus } = useImageStatus(image)
-const imageFailed = computed(() => imageStatus.value === 'error')
+const { image, breed, loading, error, fetchDog, prefetchNext } = useDogApi()
 
-/* Returns an empty object rather than `background-image: none` when the
-   photo is missing: an inline style would outrank the stylesheet and stop
-   .dog-img-failed painting its gradient. */
+/* An empty object rather than `background-image: none`, because an inline
+   style outranks the stylesheet and would stop the skeleton and error
+   states painting their backgrounds. */
 const portraitStyle = computed(() =>
-  imageFailed.value || !image.value ? {} : { backgroundImage: `url('${image.value}')` }
+  image.value ? { backgroundImage: `url('${image.value}')` } : {}
 )
 const { names, loading: namesLoading, drawNames, removeName } = useNames()
 
@@ -174,6 +173,10 @@ function claimDog (name, originEl) {
 
   confettiOrigin.value = portraitCentre()
   confettiOn.value = true
+
+  // Fetch and decode the next dog now, so the swap when the celebration
+  // ends has nothing left to wait for.
+  prefetchNext()
 
   emit('newDogForKennel', {
     name,
@@ -330,24 +333,58 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   transition: opacity 0.25s ease, box-shadow 0.25s ease;
 }
 
-.dog-img-failed {
+/* First load only. Once there is a dog on screen it stays put through the
+   next fetch, so there is nothing to cover. */
+.dog-img-skeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      100deg,
+      rgb(18 131 109 / 8%) 30%,
+      rgb(18 131 109 / 18%) 50%,
+      rgb(18 131 109 / 8%) 70%
+    );
+  background-size: 300% 100%;
+  animation: portrait-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes portrait-shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -150% 0; }
+}
+
+.dog-img-error {
   display: grid;
   place-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  height: 100%;
   padding: var(--space-6);
+  border-radius: inherit;
+  text-align: center;
   background:
     linear-gradient(140deg, var(--color-green-plate), var(--color-green-dark));
+  color: var(--color-surface);
 }
 
-.dog-img-fallback {
+.dog-img-error p {
   margin: 0;
-  color: var(--color-surface);
   font-size: var(--text-sm);
   font-weight: 600;
-  text-align: center;
 }
 
-.dog-img.in-process {
-  opacity: 0.35;
+/* A dip rather than a blank: the previous dog is still worth looking at
+   while the next one loads. */
+.dog-img.swapping {
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dog-img-skeleton {
+    animation: none;
+  }
 }
 
 /* The dog reacts to being named: a quick squash-and-stretch overshoot. */

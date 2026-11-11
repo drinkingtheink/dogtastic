@@ -3,12 +3,31 @@ import { breedFromUrl } from '../utils/breed'
 
 const RANDOM_DOG_URL = 'https://dog.ceo/api/breeds/image/random'
 
+async function requestUrl () {
+  const response = await fetch(RANDOM_DOG_URL)
+  if (!response.ok) throw new Error(`Dog API responded ${response.status}`)
+
+  const { message } = await response.json()
+  if (!message) throw new Error('Dog API returned no image')
+
+  return message
+}
+
 /**
- * Fetches random dog portraits from the Dog API (dog.ceo).
+ * Resolves once the browser actually has the pixels ready to paint.
  *
- * Replaces the old axios-on-Vue.prototype.$http arrangement: Vue 3 has no
- * prototype to hang globals off, and the browser's fetch covers this need.
+ * The portrait is painted with background-image, which fires no load event,
+ * so the old code swapped the URL the moment the API answered and left an
+ * empty frame until the photo arrived. Decoding first means the swap only
+ * happens when there is something to show.
  */
+async function preload (url) {
+  const image = new Image()
+  image.src = url
+  await image.decode()
+  return url
+}
+
 export function useDogApi () {
   const image = ref(null)
   const loading = ref(false)
@@ -17,24 +36,39 @@ export function useDogApi () {
   // The breed is already encoded in the URL, so this costs no extra request.
   const breed = computed(() => breedFromUrl(image.value))
 
+  // A dog already fetched and decoded, waiting for its turn on screen.
+  let queued = null
+
   async function fetchDog () {
     loading.value = true
     error.value = null
 
     try {
-      const response = await fetch(RANDOM_DOG_URL)
-      if (!response.ok) throw new Error(`Dog API responded ${response.status}`)
-
-      const { message } = await response.json()
-      image.value = message
+      const url = queued ?? await preload(await requestUrl())
+      queued = null
+      image.value = url
     } catch (cause) {
-      // The old version had no catch at all, so a failed request left the
-      // spinner up forever. Keep the previous portrait on screen instead.
+      // The previous dog stays on screen rather than blanking out.
       error.value = cause
     } finally {
       loading.value = false
     }
   }
 
-  return { image, breed, loading, error, fetchDog }
+  /**
+   * Lines up the next dog while the current one is being celebrated, so the
+   * swap at the end of the celebration is instant.
+   */
+  async function prefetchNext () {
+    if (queued) return
+
+    try {
+      queued = await preload(await requestUrl())
+    } catch {
+      // Nothing lined up; fetchDog will just request one the usual way.
+      queued = null
+    }
+  }
+
+  return { image, breed, loading, error, fetchDog, prefetchNext }
 }
