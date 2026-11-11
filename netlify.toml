@@ -1,0 +1,10 @@
+# Build settings live here rather than only in the Netlify dashboard, so the
+# repo is the source of truth for how it ships.
+#
+# The Node version comes from .nvmrc (24), which also serves anyone using nvm
+# locally. Vite 7 needs ^20.19 || >=22.12 and ESLint 10 needs
+# ^20.19 || ^22.13 || >=24, so Node 18 is not an option.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
