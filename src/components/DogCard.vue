@@ -1,7 +1,13 @@
 <template>
   <div
     class="dog-card"
-    :style="{ backgroundImage: `url('${dog.image}')` }"
+    :class="{ dragging }"
+    :style="cardStyle"
+    @pointerdown="startDrag"
+    @pointermove="onDrag"
+    @pointerup="endDrag"
+    @pointercancel="endDrag"
+    @dblclick="recentre"
   >
     <p v-if="imageFailed" class="dog-card-fallback">
       <span class="dog-card-initial">{{ initial }}</span>
@@ -15,6 +21,16 @@
 
     <button class="remove-dog" @click="emit('removeDogFromKennel', dog)">
       Remove X
+    </button>
+
+    <!-- Drag the photo anywhere on the card; this is the discoverable
+         affordance and the keyboard route to the same thing. -->
+    <button
+      class="reframe"
+      :aria-label="`Reposition ${dog.name}'s photo. Arrow keys to nudge, Backspace to centre.`"
+      @keydown="nudge"
+    >
+      <span aria-hidden="true">&#10021;</span>
     </button>
 
     <!-- A real modal dialog: showModal() brings the backdrop, Esc-to-close
@@ -33,7 +49,7 @@
 </template>
 
 <script setup>
-import { computed, useTemplateRef } from 'vue'
+import { ref, computed, useTemplateRef } from 'vue'
 import { useImageStatus } from '../composables/useImageStatus'
 
 const props = defineProps({
@@ -43,7 +59,110 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['removeDogFromKennel'])
+const emit = defineEmits(['removeDogFromKennel', 'repositionDog'])
+
+const STEP = 0.06
+
+const dragging = ref(false)
+/* Held locally while the pointer is down so the roster -- and the
+   localStorage write behind it -- is only touched once, on release. */
+const preview = ref(null)
+let origin = null
+
+const focus = computed(() => preview.value ?? {
+  x: props.dog.focusX ?? 0.5,
+  y: props.dog.focusY ?? 0.5
+})
+
+const cardStyle = computed(() => ({
+  backgroundImage: `url('${props.dog.image}')`,
+  backgroundPosition: `${focus.value.x * 100}% ${focus.value.y * 100}%`
+}))
+
+const clamp = value => Math.min(1, Math.max(0, value))
+
+function commit (next) {
+  emit('repositionDog', { id: props.dog.id, focusX: next.x, focusY: next.y })
+}
+
+function startDrag (event) {
+  // Leave the buttons and the name alone.
+  if (event.target.closest('button')) return
+
+  origin = {
+    pointerX: event.clientX,
+    pointerY: event.clientY,
+    x: focus.value.x,
+    y: focus.value.y,
+    width: event.currentTarget.clientWidth,
+    height: event.currentTarget.clientHeight
+  }
+  dragging.value = true
+
+  // Keeps the drag alive if the pointer leaves the card. Not worth failing
+  // the whole gesture over if the browser will not grant it.
+  try {
+    event.currentTarget.setPointerCapture(event.pointerId)
+  } catch {
+    // Dragging still works, it just stops at the card's edge.
+  }
+}
+
+function onDrag (event) {
+  if (!origin) return
+
+  // Dragging down should reveal what is above, so the offset moves against
+  // the pointer. A full card's travel covers the whole range.
+  preview.value = {
+    x: clamp(origin.x - (event.clientX - origin.pointerX) / origin.width),
+    y: clamp(origin.y - (event.clientY - origin.pointerY) / origin.height)
+  }
+}
+
+function endDrag (event) {
+  if (!origin) return
+  origin = null
+  dragging.value = false
+
+  /* Save before releasing the pointer. Releasing a capture the browser is
+     no longer tracking throws, and with that call first the throw took the
+     commit with it: the card showed the new framing from local state that
+     was never written, then reverted on reload. */
+  if (preview.value) {
+    commit(preview.value)
+    preview.value = null
+  }
+
+  try {
+    event.currentTarget.releasePointerCapture(event.pointerId)
+  } catch {
+    // Already released, or never captured.
+  }
+}
+
+function recentre () {
+  commit({ x: 0.5, y: 0.5 })
+}
+
+function nudge (event) {
+  const moves = {
+    ArrowUp: [0, STEP],
+    ArrowDown: [0, -STEP],
+    ArrowLeft: [STEP, 0],
+    ArrowRight: [-STEP, 0]
+  }
+
+  if (event.key === 'Backspace') {
+    event.preventDefault()
+    return recentre()
+  }
+
+  const move = moves[event.key]
+  if (!move) return
+
+  event.preventDefault()
+  commit({ x: clamp(focus.value.x + move[0]), y: clamp(focus.value.y + move[1]) })
+}
 
 const { status } = useImageStatus(() => props.dog.image)
 const imageFailed = computed(() => status.value === 'error')
@@ -141,6 +260,35 @@ function closeOnBackdrop (event) {
   font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.dog-card {
+  cursor: grab;
+  touch-action: none;
+}
+
+.dog-card.dragging {
+  cursor: grabbing;
+}
+
+.reframe {
+  display: none;
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  color: var(--color-green-deep);
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-xs);
+  line-height: 1;
+}
+
+.dog-card:hover .reframe,
+.dog-card:focus-within .reframe {
+  display: block;
 }
 
 .remove-dog {

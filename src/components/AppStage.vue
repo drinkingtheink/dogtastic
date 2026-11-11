@@ -25,6 +25,7 @@
         :dogs="roster"
         @remove-dog-from-kennel="remove"
         @clear-kennel="clear"
+        @reposition-dog="repositionDog"
       />
 
       <!-- These two trail the kennel in markup so a stacked layout puts them
@@ -82,7 +83,11 @@ const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
 
 // The roster used to live in this component's data(); it now lives in a
 // composable that also persists it to localStorage.
-const { roster, add, remove, clear } = useKennel()
+const { roster, add, remove, clear, setFocus } = useKennel()
+
+function repositionDog ({ id, focusX, focusY }) {
+  setFocus(id, focusX, focusY)
+}
 
 const kennelRef = ref(null)
 const flight = ref(null)
