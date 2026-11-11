@@ -36,6 +36,10 @@
       <Transition name="fade">
         <p v-if="breed" class="dog-breed">{{ breed }}</p>
       </Transition>
+
+      <button class="primary new-dog" @click="fetchDog">
+        <span aria-hidden="true">&#8635;</span> New Dog
+      </button>
     </div>
 
     <Confetti
@@ -43,17 +47,6 @@
       :origin="confettiOrigin"
       @done="confettiOn = false"
     />
-
-    <!-- Each button sits next to what it refreshes: the dog above,
-         the names below. -->
-    <div class="dog-actions">
-      <button class="primary" @click="fetchDog">
-        New Dog, Please
-      </button>
-      <button class="primary" @click="drawNames">
-        More Names, Please
-      </button>
-    </div>
 
     <h4>{{ PROMPT }}</h4>
 
@@ -94,6 +87,14 @@
           @click="claimDog(name, $event.currentTarget)"
         >
           {{ name }}
+        </button>
+
+        <button
+          key="more-names"
+          class="name more-names"
+          @click="drawNames"
+        >
+          <span aria-hidden="true">&#8635;</span> More names
         </button>
       </TransitionGroup>
     </div>
@@ -251,22 +252,41 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   color: var(--color-green-dark);
 }
 
-.dog-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  justify-content: center;
-  /* Clears the portrait's ring and the badge straddling its edge. */
+/* Rides on the portrait's top-right shoulder instead of taking a row of
+   its own. Dark on white text, so it stays legible over any photo. */
+.new-dog {
+  position: absolute;
+  top: 4%;
+  right: -5%;
+  z-index: 3;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  box-shadow: var(--shadow-lg);
+}
+
+.img-stage + h4,
+.img-stage ~ h4 {
   margin-top: var(--space-5);
 }
 
-.dog-actions button {
-  margin: 0;
+/* Reads as an action rather than a name: dashed, and it does not fill in
+   on hover the way the names do. */
+.more-names {
+  border-style: dashed;
+  border-color: rgb(18 131 109 / 45%);
+  background-color: transparent;
+  box-shadow: none;
+  font-weight: bold;
+  font-size: var(--text-sm);
 }
 
-/* Breathing room between the refresh row and the names it sits between. */
-.dog-actions + h4 {
-  margin-top: var(--space-4);
+.more-names:hover {
+  background-color: rgb(18 131 109 / 10%);
+  border-color: var(--color-green-plate);
+  color: var(--color-green-dark);
+  transform: translateY(-2px);
+  box-shadow: none;
 }
 
 /* Sits on the portrait's lower edge like a collar tag, rather than
@@ -375,6 +395,8 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .img-stage {
   position: relative;
+  width: var(--dog-portrait-size);
+  margin: 0 auto;
 }
 
 .dog-selected-name {
