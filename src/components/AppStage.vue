@@ -13,6 +13,7 @@
       <DogSearch
         id="dog-search"
         class="app-panel"
+        :collected-breeds="collectedBreeds"
         @new-dog-for-kennel="sendToKennel"
       />
 
@@ -69,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import DogSearch from './DogSearch.vue'
 import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
@@ -86,6 +87,12 @@ const { roster, add, remove, clear } = useKennel()
 const kennelRef = ref(null)
 const flight = ref(null)
 const receiving = ref(false)
+
+/* So the naming panel can say whether the dog on screen would be a new
+   breed or one you already have. */
+const collectedBreeds = computed(
+  () => [...new Set(roster.value.map(dog => dog.breed).filter(Boolean))]
+)
 
 const kennelOnScreen = ref(true)
 

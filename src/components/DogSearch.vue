@@ -33,7 +33,16 @@
       </Transition>
 
       <Transition name="fade">
-        <p v-if="breed" class="dog-breed">{{ breed }}</p>
+        <p
+          v-if="breed"
+          class="dog-breed"
+          :class="{ 'already-collected': breedAlreadyCollected }"
+        >
+          <span class="dog-breed-flag">
+            {{ breedAlreadyCollected ? 'Got one' : 'New' }}
+          </span>
+          {{ breed }}
+        </p>
       </Transition>
 
       <button class="primary new-dog" @click="fetchDog">
@@ -117,9 +126,21 @@ const CELEBRATION_MS = 1000
 const MAX_NAME_LENGTH = 40
 const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 
+const props = defineProps({
+  /** Breed names already in the kennel, so the badge can say which. */
+  collectedBreeds: {
+    type: Array,
+    default: () => []
+  }
+})
+
 const emit = defineEmits(['newDogForKennel'])
 
 const { image, breed, loading, error, fetchDog, prefetchNext } = useDogApi()
+
+const breedAlreadyCollected = computed(
+  () => Boolean(breed.value) && props.collectedBreeds.includes(breed.value)
+)
 
 /* An empty object rather than `background-image: none`, because an inline
    style outranks the stylesheet and would stop the skeleton and error
@@ -294,11 +315,14 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   bottom: -0.6rem;
   transform: translateX(-50%);
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin: 0;
   width: max-content;
   max-width: 85%;
   box-shadow: var(--shadow-md);
-  padding: var(--space-1) var(--space-4);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-1);
   border-radius: var(--radius-pill);
   background-color: var(--color-green-plate);
   color: var(--color-surface);
@@ -306,6 +330,29 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   font-weight: bold;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* The word carries the meaning, so this reads without the colour: a breed
+   you already have is stated as such, not merely dimmed. */
+.dog-breed-flag {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  color: var(--color-green-plate);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+}
+
+.dog-breed.already-collected {
+  background-color: var(--color-green-dark);
+}
+
+/* Darkened rather than lightened: a white veil over the green lifted the
+   chip to 3.61:1 under its white text, short of AA. Going the other way
+   keeps the two chips visually distinct and legible. */
+.dog-breed.already-collected .dog-breed-flag {
+  background-color: rgb(0 0 0 / 28%);
+  color: var(--color-surface);
 }
 
 .names-loading {
