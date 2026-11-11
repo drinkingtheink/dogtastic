@@ -342,6 +342,9 @@ function landDog () {
 
 #kennel {
   grid-area: 1 / 3 / span 3 / 4;
+  /* Its own header supplies the top padding, so the sticky bar can sit
+     flush against the panel edge with nothing scrolling past above it. */
+  padding-top: 0;
   position: sticky;
   top: var(--space-4);
   max-height: calc(100vh - var(--space-6));

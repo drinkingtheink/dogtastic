@@ -1,16 +1,30 @@
 <template>
   <div ref="rootEl">
-    <h3 class="kennel-count-display">
-      Caring for {{ dogCount }} {{ dogCount === 1 ? "pooch" : "pooches" }}
-    </h3>
+    <!-- Sticky, because the roster scrolls inside this panel: left at the
+         foot of the list these controls scrolled away with it. -->
+    <header class="kennel-header">
+      <h3 class="kennel-count-display">
+        Caring for {{ dogCount }} {{ dogCount === 1 ? "pooch" : "pooches" }}
+      </h3>
 
-    <!-- Fades rather than vanishing: dropping it outright yanks the card
-         grid up mid-exit, which reads as the cards jumping. -->
-    <Transition name="fade">
-      <p v-if="breedCount > 0" class="kennel-breed-count">
-        {{ breedCount }} {{ breedCount === 1 ? "breed" : "breeds" }} collected
-      </p>
-    </Transition>
+      <!-- Fades rather than vanishing: dropping it outright yanks the card
+           grid up mid-exit, which reads as the cards jumping. -->
+      <Transition name="fade">
+        <p v-if="breedCount > 0" class="kennel-breed-count">
+          {{ breedCount }} {{ breedCount === 1 ? "breed" : "breeds" }} collected
+        </p>
+      </Transition>
+
+      <Transition name="fade">
+        <div v-if="dogCount > 0" class="kennel-actions">
+          <KennelReel :dogs="dogs" />
+
+          <button class="clear-kennel primary" @click="emit('clearKennel')">
+            Empty Kennel
+          </button>
+        </div>
+      </Transition>
+    </header>
 
     <TransitionGroup
       tag="section"
@@ -60,15 +74,6 @@
       </div>
     </Transition>
 
-    <Transition name="fade">
-      <div v-if="dogCount > 0" class="kennel-actions">
-        <KennelReel :dogs="dogs" />
-
-        <button class="clear-kennel primary" @click="emit('clearKennel')">
-          Empty Kennel
-        </button>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -191,12 +196,25 @@ function pinLeavingCard (el) {
   }
 }
 
+.kennel-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  /* Flat fill rather than the panel's pattern: a patterned sticky layer
+     has its own background origin and slides out of register with the
+     panel behind it as the roster scrolls. */
+  background-color: var(--color-yellow-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 8px 14px -10px rgb(16 42 36 / 45%);
+}
+
 .kennel-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
   justify-content: center;
-  margin-top: var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .kennel-actions :deep(button) {
