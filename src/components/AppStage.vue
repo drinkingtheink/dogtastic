@@ -32,7 +32,12 @@
       <!-- These two trail the kennel in markup so a stacked layout puts them
            at the foot of the page rather than above the dog. The grid lifts
            them into the rail when there is a rail to lift them into. -->
-      <BreedProgress :dogs="roster" />
+      <!-- The meter poses the question -- this many breeds exist, you have
+           this many -- so the game that tests it belongs right under it. -->
+      <div class="rail-breeds">
+        <BreedProgress :dogs="roster" />
+        <BreedQuiz />
+      </div>
 
       <footer class="colophon">
         <a
@@ -78,6 +83,7 @@ import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
 import BrandMark from './BrandMark.vue'
 import BreedProgress from './BreedProgress.vue'
+import BreedQuiz from './BreedQuiz.vue'
 import { useKennel } from '../composables/useKennel'
 
 const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
@@ -302,7 +308,7 @@ function landDog () {
   grid-area: 1 / 2 / span 3 / 3;
 }
 
-.breed-progress {
+.rail-breeds {
   grid-area: 2 / 1;
 }
 
@@ -400,6 +406,11 @@ function landDog () {
 
   .brand-mark-slot {
     margin: var(--space-3) auto 0;
+  }
+
+  .rail-breeds {
+    max-width: 22rem;
+    margin: 0 auto;
   }
 
   .colophon {
