@@ -38,7 +38,7 @@
           rel="noopener noreferrer"
         >About this Project</a>
         <a
-          href="https://drinkingtheink.github.io/"
+          href="https://drinkingtheink.com/"
           target="_blank"
           rel="noopener noreferrer"
         >About the Author</a>
