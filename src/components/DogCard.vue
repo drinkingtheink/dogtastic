@@ -54,15 +54,23 @@ function closeOnBackdrop (event) {
 
 <style scoped>
 .dog-card {
-  border: 2px solid var(--color-green);
   height: 12rem;
-  width: 44%;
+  width: calc(50% - var(--space-3));
   position: relative;
-  /* The name tag hangs 1rem below the card, so the bottom margin has to
-     clear it or the next row of cards lands on top of the name. */
-  margin: 0.2rem 0.2rem 1.6rem;
+  margin: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
   background-size: cover;
   background-position: center;
+  background-color: var(--color-green-dark);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dog-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Beats .dog-card's own position so a card leaving the kennel drops out of
@@ -71,41 +79,21 @@ function closeOnBackdrop (event) {
   position: absolute;
 }
 
-.dog-card:hover .remove-dog,
-.dog-card:focus-within .dog-card-breed {
-  display: block;
-  font-weight: normal;
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.85;
-}
-
-.full-img-caption {
-  margin: 0.75rem 0 0;
-  color: var(--color-ink);
-  font-size: var(--text-sm);
-}
-
-.remove-dog {
-  display: inline-block;
-}
-
 .dog-card-name {
   position: absolute;
-  bottom: -1rem;
+  bottom: 0;
   left: 0;
-  background-color: var(--color-green-plate);
-  color: var(--color-surface);
   width: 100%;
-  padding: 0.2rem 0;
-  font-weight: bold;
-  font-family: var(--font-body);
-  font-size: var(--text-base);
+  margin: 0;
+  padding: var(--space-2);
   border: 0;
   border-radius: 0;
-  opacity: 1;
-  margin: 0;
+  background-color: var(--color-green-plate);
+  color: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: bold;
+  text-align: center;
 }
 
 .dog-card-breed {
@@ -117,27 +105,30 @@ function closeOnBackdrop (event) {
   opacity: 0.85;
 }
 
-.full-img-caption {
-  margin: 0.75rem 0 0;
-  color: var(--color-ink);
-  font-size: var(--text-sm);
-}
-
 .remove-dog {
-  transition: all 0.2s;
-  padding: 0.25rem 0.5rem;
   display: none;
   position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
   background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-xs);
+  font-weight: bold;
+}
+
+.dog-card:hover .remove-dog,
+.dog-card:focus-within .remove-dog {
+  display: block;
 }
 
 .full-img-dialog {
-  border: 4px solid var(--color-green);
-  border-radius: var(--radius-md);
-  padding: 1rem;
+  border: 0;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
   background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
   max-width: min(90vw, 40rem);
 }
 
@@ -149,16 +140,22 @@ function closeOnBackdrop (event) {
   display: block;
   max-width: 100%;
   max-height: 70vh;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+}
+
+.full-img-caption {
+  margin: var(--space-3) 0 0;
+  color: var(--color-ink);
+  font-size: var(--text-sm);
 }
 
 .remove-full-img {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
 }
 
 @media only screen and (max-width: 600px) {
   .dog-card {
-    width: 80%;
+    width: 100%;
   }
 }
 </style>

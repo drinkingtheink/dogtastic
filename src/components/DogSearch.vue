@@ -193,18 +193,20 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .dog-img {
   height: var(--dog-portrait-size);
   width: var(--dog-portrait-size);
-  transition: all 0.2s;
   border-radius: 50%;
-  border: 4px solid var(--color-green);
   background-color: rgb(255 255 255 / 50%);
   background-size: cover;
   background-position: center;
   margin: 0 auto;
+  box-shadow:
+    0 0 0 5px var(--color-surface),
+    0 0 0 10px var(--color-green),
+    var(--shadow-lg);
+  transition: opacity 0.25s ease, box-shadow 0.25s ease;
 }
 
 .dog-img.in-process {
-  opacity: 0.25;
-  border-color: transparent;
+  opacity: 0.35;
 }
 
 .img-stage {
@@ -213,12 +215,15 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .dog-selected-name {
   position: absolute;
-  padding: 1rem 0;
-  left: 0;
-  right: 0;
-  top: 12rem;
+  padding: var(--space-3) var(--space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  top: 11rem;
   text-align: center;
-  width: 100%;
+  width: max-content;
+  max-width: 90%;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lg);
   background-color: var(--color-green-plate);
   color: var(--color-surface);
   font-weight: bold;
@@ -250,9 +255,10 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .custom-name-input {
   flex: 1 1 auto;
   min-width: 0;
-  border: 3px solid var(--color-green-dark);
-  border-radius: var(--radius-sm);
-  padding: 0.3rem 0.6rem;
+  border: 2px solid rgb(18 131 109 / 25%);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  box-shadow: var(--shadow-sm);
   font-family: var(--font-body);
   font-size: var(--text-base);
   background-color: var(--color-surface);
@@ -285,21 +291,25 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 
 .name {
-  border: 3px solid var(--color-green-dark);
-  padding: var(--space-2) var(--space-3);
+  border: 2px solid rgb(18 131 109 / 20%);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
   margin: var(--space-1);
-  transition: all 0.2s;
   font-size: var(--text-base);
-  opacity: 1;
-  animation: slow-appear 0.5s;
+  font-weight: 600;
+  color: var(--color-green-dark);
   background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  animation: slow-appear 0.5s;
 }
 
 .name:hover {
   cursor: pointer;
-  background-color: var(--color-contrast);
+  background-color: var(--color-green-plate);
+  border-color: var(--color-green-plate);
   color: var(--color-surface);
-  border-color: var(--color-green-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 @media only screen and (max-width: 1300px) {

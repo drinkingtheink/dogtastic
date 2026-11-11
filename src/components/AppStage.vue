@@ -62,7 +62,8 @@ const { roster, add, remove, clear } = useKennel()
 
 #kennel {
   border-radius: var(--radius-lg);
-  padding-bottom: 2rem;
+  padding-bottom: var(--space-6);
+  box-shadow: var(--shadow-md);
 }
 
 @media only screen and (max-width: 1020px) {

@@ -124,6 +124,8 @@ function pinLeavingCard (el) {
   align-content: center;
   justify-content: center;
   flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: 0 var(--space-3);
 }
 
 .dog-illo {
