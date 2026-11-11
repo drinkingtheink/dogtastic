@@ -4,14 +4,24 @@
 
     <div class="img-stage">
       <div
+        ref="portraitEl"
         class="dog-img"
-        :class="{ 'in-process': loading, 'dog-img-failed': imageFailed }"
+        :class="{ 'in-process': loading, 'dog-img-failed': imageFailed, celebrating: selectedName }"
         :style="portraitStyle"
       >
         <p v-if="imageFailed" class="dog-img-fallback">
           This pooch would not sit for a portrait
         </p>
       </div>
+
+      <template v-if="selectedName">
+        <span
+          v-for="ring in 3"
+          :key="ring"
+          class="shockwave"
+          :style="{ animationDelay: `${(ring - 1) * 130}ms` }"
+        />
+      </template>
 
       <Transition name="fade">
         <Bubbles v-if="selectedName" />
@@ -27,6 +37,12 @@
         <p v-if="breed" class="dog-breed">{{ breed }}</p>
       </Transition>
     </div>
+
+    <Confetti
+      v-if="confettiOn"
+      :origin="confettiOrigin"
+      @done="confettiOn = false"
+    />
 
     <!-- Each button sits next to what it refreshes: the dog above,
          the names below. -->
@@ -90,8 +106,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
 import Bubbles from './Bubbles.vue'
+import Confetti from './Confetti.vue'
 import { useDogApi } from '../composables/useDogApi'
 import { useNames } from '../composables/useNames'
 import { useImageStatus } from '../composables/useImageStatus'
@@ -120,6 +137,10 @@ const { names, loading: namesLoading, drawNames, removeName } = useNames()
 const selectedName = ref(null)
 const customName = ref('')
 
+const portraitEl = useTemplateRef('portraitEl')
+const confettiOn = ref(false)
+const confettiOrigin = ref({ x: 0.5, y: 0.45 })
+
 /* Blocked while a celebration is already running, so a dog cannot be
    named twice before the next one arrives. */
 const canNameDog = computed(
@@ -132,9 +153,23 @@ function later (fn, ms) {
   timers.push(setTimeout(fn, ms))
 }
 
+/** Where the burst should come from, as viewport fractions. */
+function portraitCentre () {
+  const box = portraitEl.value?.getBoundingClientRect()
+  if (!box) return { x: 0.5, y: 0.45 }
+
+  return {
+    x: (box.left + box.width / 2) / window.innerWidth,
+    y: (box.top + box.height / 2) / window.innerHeight
+  }
+}
+
 function claimDog (name) {
   selectedName.value = name
   removeName(name)
+
+  confettiOrigin.value = portraitCentre()
+  confettiOn.value = true
 
   emit('newDogForKennel', { name, image: image.value, breed: breed.value })
 
@@ -282,6 +317,48 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   opacity: 0.35;
 }
 
+/* The dog reacts to being named: a quick squash-and-stretch overshoot. */
+.dog-img.celebrating {
+  animation: portrait-pop 760ms cubic-bezier(0.2, 1.7, 0.35, 1);
+}
+
+@keyframes portrait-pop {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.11) rotate(-2deg); }
+  55% { transform: scale(0.95) rotate(1.5deg); }
+  78% { transform: scale(1.03) rotate(-0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Rings pushing outward from the portrait, staggered so they read as a
+   pulse rather than one hoop. */
+.shockwave {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--dog-portrait-size);
+  height: var(--dog-portrait-size);
+  border: 5px solid var(--color-green);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: shockwave 1s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes shockwave {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+    border-width: 5px;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(2.2);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
 .img-stage {
   position: relative;
 }
@@ -304,6 +381,63 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   color: var(--color-surface);
   font-weight: bold;
   font-size: var(--text-lg);
+  overflow: hidden;
+  animation: stamp 620ms cubic-bezier(0.16, 1.6, 0.4, 1);
+}
+
+/* Lands like a rubber stamp: oversized and tilted, overshooting on the
+   way down. */
+@keyframes stamp {
+  0% {
+    transform: translate(-50%, -50%) scale(2.6) rotate(-14deg);
+    opacity: 0;
+  }
+
+  55% {
+    transform: translate(-50%, -50%) scale(0.9) rotate(3deg);
+    opacity: 1;
+  }
+
+  75% {
+    transform: translate(-50%, -50%) scale(1.06) rotate(-1.5deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+}
+
+/* A highlight sweeping across the banner once it has settled. */
+.dog-selected-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgb(255 255 255 / 55%) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  animation: shine 1s ease-out 320ms;
+}
+
+@keyframes shine {
+  from { background-position: 160% 0; }
+  to { background-position: -160% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dog-img.celebrating,
+  .shockwave,
+  .dog-selected-name,
+  .dog-selected-name::after {
+    animation: none;
+  }
+
+  .shockwave {
+    display: none;
+  }
 }
 
 .custom-name {
