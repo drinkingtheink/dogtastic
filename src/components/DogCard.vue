@@ -64,8 +64,11 @@ function closeOnBackdrop (event) {
 
 <style scoped>
 .dog-card {
-  height: 12rem;
-  width: calc(50% - var(--space-3));
+  /* Two columns separated by one gap means each card is half the row
+     minus half a gap; subtracting a whole gap left a gap's worth of
+     space unused. */
+  width: calc(50% - var(--space-3) / 2);
+  aspect-ratio: 3 / 2;
   position: relative;
   margin: 0;
   border: 0;

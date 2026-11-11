@@ -183,14 +183,14 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 
 .fetch-dogs {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
 }
 
 .dog-breed {
   display: inline-block;
   margin: var(--space-3) auto 0;
   padding: var(--space-1) var(--space-4);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-green-plate);
   color: var(--color-surface);
   font-size: var(--text-xs);
@@ -245,10 +245,13 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .dog-selected-name {
   position: absolute;
+  /* It is a <p>, so without this its default 1em top margin offsets the
+     centring by a fifth of its own font size. */
+  margin: 0;
   padding: var(--space-3) var(--space-5);
   left: 50%;
-  transform: translateX(-50%);
-  top: 11rem;
+  top: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
   width: max-content;
   max-width: 90%;
@@ -261,14 +264,14 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 
 .custom-name {
-  margin: 1.25rem auto 0;
+  margin: var(--space-5) auto 0;
   max-width: 24rem;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 
 .custom-name-label {
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
   color: var(--color-green-dark);
   font-size: var(--text-xs);
   text-transform: uppercase;
@@ -278,7 +281,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .custom-name-row {
   display: flex;
-  gap: 0.4rem;
+  gap: var(--space-2);
   justify-content: center;
 }
 
@@ -296,7 +299,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 
 .custom-name-input:focus-visible {
-  outline: 3px solid var(--color-green);
+  outline: 3px solid var(--color-green-dark);
   outline-offset: 1px;
 }
 
@@ -342,9 +345,4 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   box-shadow: var(--shadow-md);
 }
 
-@media only screen and (max-width: 1300px) {
-  .dog-selected-name {
-    top: 6rem;
-  }
-}
 </style>

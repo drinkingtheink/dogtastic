@@ -86,6 +86,15 @@ button.primary:active {
   outline-offset: 2px;
 }
 
+/* Touch targets: the chips measured 42px and the fetch button 35px, both
+   under the 44px minimum for a finger. */
+@media (pointer: coarse) {
+  button,
+  input {
+    min-height: 44px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   button {
     transition-duration: 1ms;
