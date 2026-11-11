@@ -35,14 +35,15 @@ const { roster, add, remove, clear } = useKennel()
 
 <style scoped>
 .app-headline {
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
   line-height: 1.05;
 }
 
 .app-subheadline {
   padding-bottom: var(--space-1);
   color: var(--color-green-dark);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
+  letter-spacing: 0.02em;
 }
 
 .app-panels {

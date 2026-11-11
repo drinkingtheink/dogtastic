@@ -2,10 +2,6 @@
   <div>
     <h3>{{ TITLE }}</h3>
 
-    <button class="primary fetch-dogs" @click="fetchDog">
-      New Dog, Please
-    </button>
-
     <div class="img-stage">
       <div
         class="dog-img"
@@ -26,38 +22,28 @@
           Welcome, {{ selectedName }}!
         </p>
       </Transition>
+
+      <Transition name="fade">
+        <p v-if="breed" class="dog-breed">{{ breed }}</p>
+      </Transition>
     </div>
 
-    <Transition name="fade">
-      <p v-if="breed" class="dog-breed">{{ breed }}</p>
-    </Transition>
+    <!-- Each button sits next to what it refreshes: the dog above,
+         the names below. -->
+    <div class="dog-actions">
+      <button class="primary" @click="fetchDog">
+        New Dog, Please
+      </button>
+      <button class="primary" @click="drawNames">
+        More Names, Please
+      </button>
+    </div>
 
     <h4>{{ PROMPT }}</h4>
 
-    <p v-if="namesLoading && !names.length" class="names-loading">
-      Rounding up some names...
-    </p>
-
-    <div class="name-gallery" :class="{ prevent: selectedName }">
-      <TransitionGroup tag="div" class="name-tg" name="list">
-        <button
-          v-for="name in names"
-          :key="name"
-          class="name"
-          @click="claimDog(name)"
-        >
-          {{ name }}
-        </button>
-      </TransitionGroup>
-    </div>
-
-    <button class="primary" @click="drawNames">
-      More Names, Please
-    </button>
-
     <form class="custom-name" @submit.prevent="claimCustomName">
       <label class="custom-name-label" for="custom-name-input">
-        ...or christen them yourself
+        Give them a name
       </label>
 
       <div class="custom-name-row">
@@ -76,6 +62,25 @@
         </button>
       </div>
     </form>
+
+    <p class="gallery-lead">...or pick one of these</p>
+
+    <p v-if="namesLoading && !names.length" class="names-loading">
+      Rounding up some names...
+    </p>
+
+    <div class="name-gallery" :class="{ prevent: selectedName }">
+      <TransitionGroup tag="div" class="name-tg" name="list">
+        <button
+          v-for="name in names"
+          :key="name"
+          class="name"
+          @click="claimDog(name)"
+        >
+          {{ name }}
+        </button>
+      </TransitionGroup>
+    </div>
 
     <p v-if="loading">Fetching...</p>
     <p v-if="error" class="dog-error">
@@ -160,11 +165,15 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
 
 <style scoped>
+/* The naming controls share one measure so they read as a single group
+   instead of three different widths stacked up. */
 .name-gallery {
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   justify-content: center;
+  max-width: 36rem;
+  margin: 0 auto;
   opacity: 1;
   transition: all 0.2s;
 }
@@ -182,13 +191,36 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   display: inline-block;
 }
 
-.fetch-dogs {
-  margin-bottom: var(--space-1);
+.dog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+  /* Clears the portrait's ring and the badge straddling its edge. */
+  margin-top: var(--space-5);
 }
 
+.dog-actions button {
+  margin: 0;
+}
+
+/* Breathing room between the refresh row and the names it sits between. */
+.dog-actions + h4 {
+  margin-top: var(--space-4);
+}
+
+/* Sits on the portrait's lower edge like a collar tag, rather than
+   taking a row of its own underneath. */
 .dog-breed {
-  display: inline-block;
-  margin: var(--space-3) auto 0;
+  position: absolute;
+  left: 50%;
+  bottom: -0.6rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  width: max-content;
+  max-width: 85%;
+  box-shadow: var(--shadow-md);
   padding: var(--space-1) var(--space-4);
   border-radius: var(--radius-pill);
   background-color: var(--color-green-plate);
@@ -264,9 +296,18 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 
 .custom-name {
-  margin: var(--space-5) auto 0;
-  max-width: 24rem;
+  margin: var(--space-4) auto var(--space-3);
+  max-width: 28rem;
   padding: 0 var(--space-4);
+}
+
+.gallery-lead {
+  margin: 0 0 var(--space-2);
+  color: var(--color-green-dark);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: bold;
 }
 
 .custom-name-label {

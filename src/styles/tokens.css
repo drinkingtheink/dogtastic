@@ -58,12 +58,9 @@
   --shadow-md: 0 2px 4px rgb(16 42 36 / 8%), 0 8px 20px rgb(16 42 36 / 10%);
   --shadow-lg: 0 6px 12px rgb(16 42 36 / 10%), 0 18px 40px rgb(16 42 36 / 14%);
 
-  /* The dog portrait, which several components size themselves against */
-  --dog-portrait-size: 20rem;
+  /* The dog portrait. Tied to viewport height so the hero stays large on
+     a tall screen without pushing the naming controls off a short one. */
+  --dog-portrait-size: clamp(13rem, 32vh, 20rem);
 }
 
-@media only screen and (max-width: 1300px) {
-  :root {
-    --dog-portrait-size: 15rem;
-  }
-}
+
