@@ -4,14 +4,23 @@
       Caring for {{ dogCount }} {{ dogCount === 1 ? "pooch" : "pooches" }}
     </h3>
 
-    <section v-if="dogCount > 0" class="dog-display">
+    <p v-if="breedCount > 0" class="kennel-breed-count">
+      {{ breedCount }} {{ breedCount === 1 ? "breed" : "breeds" }} collected
+    </p>
+
+    <TransitionGroup
+      v-if="dogCount > 0"
+      tag="section"
+      name="card"
+      class="dog-display"
+    >
       <DogCard
         v-for="dog in dogs"
         :key="dog.id"
         :dog="dog"
         @remove-dog-from-kennel="emit('removeDogFromKennel', $event)"
       />
-    </section>
+    </TransitionGroup>
 
     <template v-else>
       <p>{{ EMPTY_MESSAGE }}</p>
@@ -47,10 +56,26 @@ const props = defineProps({
 const emit = defineEmits(["removeDogFromKennel", "clearKennel"])
 
 const dogCount = computed(() => props.dogs.length)
+
+const breedCount = computed(
+  () => new Set(props.dogs.map(dog => dog.breed).filter(Boolean)).size
+)
 </script>
 
 <style scoped>
+.kennel-breed-count {
+  margin: 0.1rem 0 0.75rem;
+  color: var(--color-green-dark);
+  font-size: 70%;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: bold;
+}
+
 .dog-display {
+  /* Cards leaving the kennel are absolutely positioned, so they need this
+     as their containing block to keep their size and place while they go. */
+  position: relative;
   display: flex;
   align-content: center;
   justify-content: center;
@@ -62,9 +87,7 @@ const dogCount = computed(() => props.dogs.length)
   opacity: 0.5;
 }
 
-/* The card name tag hangs 1rem below its card, so the button needs
-   clearance or the two collide. */
 .clear-kennel {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
 }
 </style>

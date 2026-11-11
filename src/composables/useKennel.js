@@ -1,4 +1,5 @@
 import { ref, computed, watch } from 'vue'
+import { breedFromUrl } from '../utils/breed'
 
 const STORAGE_KEY = 'dogtastic:kennel'
 
@@ -13,7 +14,11 @@ function readStoredRoster () {
 
     // Drop anything that does not look like a dog, so one bad write cannot
     // break every future visit.
-    return parsed.filter(dog => dog && typeof dog.name === 'string' && typeof dog.image === 'string')
+    return parsed
+      .filter(dog => dog && typeof dog.name === 'string' && typeof dog.image === 'string')
+      // Dogs stored before breeds existed have no breed field; derive it
+      // from the image URL rather than making anyone clear their kennel.
+      .map(dog => ({ ...dog, breed: dog.breed ?? breedFromUrl(dog.image) }))
   } catch {
     return []
   }
@@ -36,13 +41,18 @@ export function useKennel () {
 
   const count = computed(() => roster.value.length)
 
-  function add ({ name, image }) {
+  const breedCount = computed(
+    () => new Set(roster.value.map(dog => dog.breed).filter(Boolean)).size
+  )
+
+  function add ({ name, image, breed }) {
     roster.value.unshift({
       // A stable id per dog, so removing one of two dogs that happen to
       // share a name removes exactly the one that was clicked.
       id: crypto.randomUUID(),
       name,
-      image
+      image,
+      breed: breed ?? breedFromUrl(image)
     })
   }
 
@@ -54,5 +64,5 @@ export function useKennel () {
     roster.value = []
   }
 
-  return { roster, count, add, remove, clear }
+  return { roster, count, breedCount, add, remove, clear }
 }

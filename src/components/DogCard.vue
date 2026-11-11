@@ -5,6 +5,7 @@
   >
     <button class="dog-card-name" @click="openFullImg">
       {{ dog.name }}
+      <span v-if="dog.breed" class="dog-card-breed">{{ dog.breed }}</span>
     </button>
 
     <button class="remove-dog" @click="emit('removeDogFromKennel', dog)">
@@ -15,6 +16,10 @@
          and the focus trap that v-show alone could never provide. -->
     <dialog ref="dialogEl" class="full-img-dialog" @click="closeOnBackdrop">
       <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
+      <p class="full-img-caption">
+        <strong>{{ dog.name }}</strong>
+        <span v-if="dog.breed"> &middot; {{ dog.breed }}</span>
+      </p>
       <button class="remove-full-img primary" @click="dialogEl.close()">
         Close
       </button>
@@ -53,13 +58,30 @@ function closeOnBackdrop (event) {
   height: 12rem;
   width: 44%;
   position: relative;
-  margin: 0.2rem;
+  /* The name tag hangs 1rem below the card, so the bottom margin has to
+     clear it or the next row of cards lands on top of the name. */
+  margin: 0.2rem 0.2rem 1.6rem;
   background-size: cover;
   background-position: center;
 }
 
 .dog-card:hover .remove-dog,
-.dog-card:focus-within .remove-dog {
+.dog-card:focus-within .dog-card-breed {
+  display: block;
+  font-weight: normal;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.full-img-caption {
+  margin: 0.75rem 0 0;
+  color: var(--color-ink);
+  font-size: 90%;
+}
+
+.remove-dog {
   display: inline-block;
 }
 
@@ -78,6 +100,21 @@ function closeOnBackdrop (event) {
   border-radius: 0;
   opacity: 1;
   margin: 0;
+}
+
+.dog-card-breed {
+  display: block;
+  font-weight: normal;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.full-img-caption {
+  margin: 0.75rem 0 0;
+  color: var(--color-ink);
+  font-size: 90%;
 }
 
 .remove-dog {

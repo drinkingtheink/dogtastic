@@ -24,6 +24,10 @@
       </Transition>
     </div>
 
+    <Transition name="fade">
+      <p v-if="breed" class="dog-breed">{{ breed }}</p>
+    </Transition>
+
     <h4>{{ PROMPT }}</h4>
 
     <p v-if="namesLoading && !names.length" class="names-loading">
@@ -68,7 +72,7 @@ const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 
 const emit = defineEmits(['newDogForKennel'])
 
-const { image, loading, error, fetchDog } = useDogApi()
+const { image, breed, loading, error, fetchDog } = useDogApi()
 const { names, loading: namesLoading, drawNames, removeName } = useNames()
 
 const selectedName = ref(null)
@@ -83,7 +87,7 @@ function claimDog (name) {
   selectedName.value = name
   removeName(name)
 
-  emit('newDogForKennel', { name, image: image.value })
+  emit('newDogForKennel', { name, image: image.value, breed: breed.value })
 
   later(fetchDog, CELEBRATION_MS)
   later(() => { selectedName.value = null }, BANNER_CLEAR_MS)
@@ -128,6 +132,19 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .fetch-dogs {
   margin-bottom: 0.25rem;
+}
+
+.dog-breed {
+  display: inline-block;
+  margin: 0.6rem auto 0;
+  padding: 0.2rem 0.9rem;
+  border-radius: 999px;
+  background-color: var(--color-green);
+  color: var(--color-surface);
+  font-size: 75%;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .names-loading {

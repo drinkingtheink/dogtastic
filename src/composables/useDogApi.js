@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { breedFromUrl } from '../utils/breed'
 
 const RANDOM_DOG_URL = 'https://dog.ceo/api/breeds/image/random'
 
@@ -12,6 +13,9 @@ export function useDogApi () {
   const image = ref(null)
   const loading = ref(false)
   const error = ref(null)
+
+  // The breed is already encoded in the URL, so this costs no extra request.
+  const breed = computed(() => breedFromUrl(image.value))
 
   async function fetchDog () {
     loading.value = true
@@ -32,5 +36,5 @@ export function useDogApi () {
     }
   }
 
-  return { image, loading, error, fetchDog }
+  return { image, breed, loading, error, fetchDog }
 }
