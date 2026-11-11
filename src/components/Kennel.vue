@@ -19,7 +19,7 @@
         <div v-if="dogCount > 0" class="kennel-actions">
           <KennelReel :dogs="dogs" />
 
-          <button class="clear-kennel primary" @click="emit('clearKennel')">
+          <button class="clear-kennel utility" @click="emit('clearKennel')">
             Empty Kennel
           </button>
         </div>

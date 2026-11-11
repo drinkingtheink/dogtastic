@@ -21,7 +21,8 @@
 
   --color-ink: #2c3e50;
   --color-surface: #ffffff;
-  --color-contrast: #333333;
+  /* Buttons used to be a flat #333, the one colour in the UI that came
+     from nowhere in this palette. Gone; the greens do the work. */
 
   /* Type */
   --font-display: 'Bungee Inline', cursive;

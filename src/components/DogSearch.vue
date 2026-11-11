@@ -45,7 +45,7 @@
         </p>
       </Transition>
 
-      <button class="primary new-dog" @click="fetchDog">
+      <button class="utility new-dog" @click="fetchDog">
         <span aria-hidden="true">&#8635;</span> New Dog
       </button>
     </div>

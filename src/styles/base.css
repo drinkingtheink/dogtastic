@@ -67,21 +67,44 @@ button:hover {
   cursor: pointer;
 }
 
-/* Was opacity: 0.7 lifting to 1 on hover, which washed the label out at
-   rest. Colour and elevation carry the state instead. */
+/* Two tiers, so the buttons stop shouting in unison. .primary is the move
+   the screen is asking you to make; .utility is everything else.
+   Colour and elevation carry hover state -- this was once opacity 0.7
+   lifting to 1, which washed the label out at rest. */
 button.primary {
-  background-color: var(--color-contrast);
+  background-color: var(--color-green-dark);
   color: var(--color-surface);
   font-weight: bold;
   box-shadow: var(--shadow-sm);
 }
 
 button.primary:hover {
+  background-color: var(--color-green-deep);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-button.primary:active {
+/* Filled rather than transparent: the New Dog button floats over whatever
+   photo has loaded, and an outline alone would be unreadable on half of
+   them. The border is what defines the edge against the yellow panel,
+   where a white fill is only 1.5:1. */
+button.utility {
+  background-color: var(--color-surface);
+  color: var(--color-green-deep);
+  border: 2px solid var(--color-green-deep);
+  font-weight: bold;
+  box-shadow: var(--shadow-sm);
+}
+
+button.utility:hover {
+  background-color: var(--color-green-deep);
+  color: var(--color-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button.primary:active,
+button.utility:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
@@ -107,7 +130,8 @@ button.primary:active {
     transition-duration: 1ms;
   }
 
-  button.primary:hover {
+  button.primary:hover,
+  button.utility:hover {
     transform: none;
   }
 }
