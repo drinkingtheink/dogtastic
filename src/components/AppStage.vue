@@ -46,21 +46,36 @@ const { roster, add, remove, clear } = useKennel()
 }
 
 .app-panels {
-  display: flex;
-  align-content: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 var(--space-5);
 }
 
 .app-panels :deep(h3) {
   font-size: var(--text-xl);
 }
 
+/* Each panel used to be width: 50vw with min-height: 100vh, which made the
+   page 1313px tall on a 732px screen and, once stacked, buried the kennel a
+   full screen below the fold. The grid sizes the columns and each panel is
+   now only as tall as its content. */
 .app-panel {
-  width: 50vw;
-  min-height: 100vh;
-  padding-top: 1rem;
+  padding-top: var(--space-4);
+  min-width: 0;
 }
 
+/* The kennel rides along while you scroll the naming column, scrolling
+   internally once it outgrows the viewport. */
 #kennel {
+  position: sticky;
+  top: var(--space-4);
+  max-height: calc(100vh - var(--space-6));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: var(--radius-lg);
   padding-bottom: var(--space-6);
   box-shadow: var(--shadow-md);
@@ -68,19 +83,16 @@ const { roster, add, remove, clear } = useKennel()
 
 @media only screen and (max-width: 1020px) {
   .app-panels {
-    display: block;
+    grid-template-columns: 1fr;
+    padding: 0 var(--space-3);
   }
 
-  .app-panel {
-    width: 100vw;
-    margin: 0 auto;
-  }
-}
-
-@media only screen and (max-width: 800px) {
+  /* Stacked, the kennel is just part of the page flow. */
   #kennel {
-    margin-top: 1rem;
-    border-radius: 0;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+    margin-top: var(--space-5);
   }
 }
 </style>
