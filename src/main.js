@@ -1,11 +1,9 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import axios from 'axios'
 
-Vue.prototype.$http = axios
+import './styles/tokens.css'
+import './styles/base.css'
+import './styles/patterns.css'
+import './styles/animations.css'
 
-Vue.config.productionTip = false
-
-new Vue({
-  render: h => h(App),
-}).$mount('#app')
+createApp(App).mount('#app')

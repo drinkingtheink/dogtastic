@@ -1,248 +1,214 @@
 <template>
-    <div>
-        <h3>{{ title }}</h3>
+  <div>
+    <h3>{{ TITLE }}</h3>
 
-        <button 
-            v-on:click="fetchDogs"
-            class="primary fetch-dogs"
-        >New Dog, Please</button>
+    <button class="primary fetch-dogs" @click="fetchDog">
+      New Dog, Please
+    </button>
 
-        <div class="img-stage">
-            <div 
-                class="dog-img" 
-                v-bind:class="{ 'in-process': inProcess }" 
-                v-bind:style="{ 'background-image': 'url(' + dogImage + ')' }"
-            ></div>
-            
-            <transition name="fade">
-                <Bubbles v-if="selectedName" />
-            </transition>
-            
-            <transition name="fade">
-                <p class="dog-selected-name" v-if="selectedName">Welcome, {{ selectedName }}!
-                </p>
-            </transition>
-        </div>
+    <div class="img-stage">
+      <div
+        class="dog-img"
+        :class="{ 'in-process': loading }"
+        :style="{ backgroundImage: image ? `url('${image}')` : 'none' }"
+      />
 
-        <h4>{{ headline }}</h4>
+      <Transition name="fade">
+        <Bubbles v-if="selectedName" />
+      </Transition>
 
-        <div class="name-gallery" :class="{ 'prevent': selectedName }">
-            <transition-group tag="div" class="name-tg" name="list">
-                <button 
-                    v-for="(name, index) in names" 
-                    :key="`dog-name-${index}`"
-                    class="name"
-                    v-on:click="sendDogToKennel(name)"
-                >
-                    {{ name }}
-                </button>
-            </transition-group>
-        </div>
-
-        <button 
-            v-on:click="fetchNames"
-            class="primary"
-        >More Names, Please</button>
-
-        <p v-if="inProcess">Fetching...</p>
+      <Transition name="fade">
+        <p v-if="selectedName" class="dog-selected-name">
+          Welcome, {{ selectedName }}!
+        </p>
+      </Transition>
     </div>
+
+    <h4>{{ PROMPT }}</h4>
+
+    <div class="name-gallery" :class="{ prevent: selectedName }">
+      <TransitionGroup tag="div" class="name-tg" name="list">
+        <button
+          v-for="name in names"
+          :key="name"
+          class="name"
+          @click="claimDog(name)"
+        >
+          {{ name }}
+        </button>
+      </TransitionGroup>
+    </div>
+
+    <button class="primary" @click="drawNames">
+      More Names, Please
+    </button>
+
+    <p v-if="loading">Fetching...</p>
+    <p v-if="error" class="dog-error">
+      The Dog API is not answering right now. Try again?
+    </p>
+  </div>
 </template>
 
-<script>
-    import Bubbles from './Bubbles';
-    import nameList from '../fixtures/names';
+<script setup>
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import Bubbles from './Bubbles.vue'
+import nameList from '../fixtures/names'
+import { useDogApi } from '../composables/useDogApi'
 
-    const numberOfNames = 10;
-    const transitionTime = 1000;
-    const justUnderTransition = transitionTime - 100;
+const TITLE = 'Name that Pooch'
+const PROMPT = 'What name is worthy of this magnificent creature?'
 
-    export default {
-        name: 'DogSearch',
-        components: {
-            Bubbles
-        },
-        data() {
-            return {
-                title: 'Name that Pooch',
-                headline: 'What name is worthy of this magnificent creature?',
-                inProcess: false,
-                dogImage: null,
-                names: null,
-                numberOfNames: numberOfNames,
-                selectedName: null,
-            }
-        },
-        computed: {
-            nameCount () {
-                return this.names ? this.names.length : 0;
-            }
-        },
-        watch: {
-            nameCount () {
-                if(this.nameCount < 1) {
-                    this.fetchNames();
-                }
-            }
-        },
-        methods: {
-            fetchDogs () {
-                const baseURI = 'https://dog.ceo/api/breeds/image/random';
-                this.inProcess = true;
-                this.$http.get(baseURI)
-                  .then((result) => {
-                      this.dogImage = result.data.message;
-                      this.inProcess = false;
-                  })
-            },
-            fetchNames () {
-                this.names = [];
-                let newNames = [];
+const NAMES_PER_DRAW = 10
+const CELEBRATION_MS = 1000
+const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 
-                for (let i = 0; i < this.numberOfNames; i++) {
-                    newNames.push(nameList[Math.floor(Math.random()*nameList.length)]);
-                }
+const emit = defineEmits(['newDogForKennel'])
 
-                this.names = newNames;
-            },
-            sendDogToKennel (name) {
-                let newDog = {};
-                newDog.dogImage = this.dogImage;
-                newDog.name = name;
-                this.selectedName = name;
-                this.removeNameFromList(name);
-                this.emitDogToKennel(newDog);
+const { image, loading, error, fetchDog } = useDogApi()
 
-                setTimeout(() => this.dogCleanup(), transitionTime);
-            },
-            dogCleanup () {
-                this.fetchDogs();
-                this.clearSelectedName();
-            },
-            removeNameFromList (name) {
-                let filteredNames = this.names.filter(filtName => filtName != name);
-                this.names = filteredNames;
-            },
-            emitDogToKennel (dog) {
-                this.$emit('newDogForKennel', dog);
-            },
-            clearSelectedName () {
-                setTimeout(() => this.selectedName = null, justUnderTransition);
-            }
-        },
-        mounted() {
-            this.fetchDogs();
-            this.fetchNames();
-        }
-    }
+const names = ref([])
+const selectedName = ref(null)
+
+const timers = []
+
+function later (fn, ms) {
+  timers.push(setTimeout(fn, ms))
+}
+
+/** Draws names without replacement, so the gallery never shows one twice. */
+function drawNames () {
+  const drawn = new Set()
+
+  while (drawn.size < NAMES_PER_DRAW && drawn.size < nameList.length) {
+    drawn.add(nameList[Math.floor(Math.random() * nameList.length)])
+  }
+
+  names.value = [...drawn]
+}
+
+function claimDog (name) {
+  selectedName.value = name
+  names.value = names.value.filter(candidate => candidate !== name)
+
+  emit('newDogForKennel', { name, image: image.value })
+
+  later(fetchDog, CELEBRATION_MS)
+  later(() => { selectedName.value = null }, BANNER_CLEAR_MS)
+}
+
+// Refill the gallery once it has been emptied.
+watch(names, current => {
+  if (current.length === 0) drawNames()
+})
+
+onMounted(() => {
+  fetchDog()
+  drawNames()
+})
+
+// The original left these timers running after teardown.
+onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
 
-<style lang="scss" scoped>
-    @import '../styles/palette';
-    @import '../styles/transitions';
+<style scoped>
+.name-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  opacity: 1;
+  transition: all 0.2s;
+}
 
-    .name-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        align-content: center;
-        justify-content: center;
-        opacity: 1;
-        transition: all .2s;
+.name-gallery.prevent {
+  opacity: 0.6;
+  pointer-events: none;
+}
 
-        &.prevent{
-            opacity: .6;
-            pointer-events: none;
-        }
+.name-tg {
+  width: 100%;
+}
 
-        .name-tg {
-            width: 100%;
+.name-tg button {
+  display: inline-block;
+}
 
-            button {
-                display: inline-block;
-            }
-        }
-    }
+.fetch-dogs {
+  margin-bottom: 0.25rem;
+}
 
-    .fetch-dogs {
-        margin-bottom: .25rem;
-    }
+.dog-img {
+  height: var(--dog-portrait-size);
+  width: var(--dog-portrait-size);
+  transition: all 0.2s;
+  border-radius: 50%;
+  border: 4px solid var(--color-green);
+  background-color: rgb(255 255 255 / 50%);
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto;
+}
 
-    $largeDim: 20em;
-    $medDim: 18em;
-    $smlDim: 15em;
+.dog-img.in-process {
+  opacity: 0.25;
+  border-color: transparent;
+}
 
-    .dog-img {
-        height: $largeDim;
-        width: $largeDim;
-        transition: all .2s;
-        border-radius: 50%;
-        border: 4px solid $green;
-        background-color: rgba(white, .5);
-        background-size: cover;
-        background-position: center;
-        margin: 0 auto;
+.img-stage {
+  position: relative;
+}
 
-        @media only screen and (max-width: 1020px) {
-            height: $largeDim;
-            width: $largeDim;
-        }
+.dog-selected-name {
+  position: absolute;
+  padding: 1rem 0;
+  left: 0;
+  right: 0;
+  top: 12rem;
+  text-align: center;
+  width: 100%;
+  background-color: var(--color-green);
+  color: var(--color-surface);
+  font-weight: bold;
+  font-size: 130%;
+}
 
-        @media only screen and (max-width: 1300px) {
-            height: $smlDim;
-            width: $smlDim;
-        }
-    }
+.dog-error {
+  color: var(--color-green-dark);
+  font-size: 80%;
+}
 
-    .dog-img.in-process {
-        opacity: .25;
-        border: 4px solid transparent;
-    }
+.name {
+  border: 3px solid var(--color-green-dark);
+  padding: 0.25rem 0.5rem;
+  margin: 0.25rem;
+  transition: all 0.2s;
+  font-size: 120%;
+  opacity: 1;
+  animation: slow-appear 0.5s;
+  background-color: var(--color-surface);
+}
 
-    .img-stage {
-        position: relative;
-    }
+.name:hover {
+  cursor: pointer;
+  background-color: var(--color-contrast);
+  color: var(--color-surface);
+  border-color: var(--color-green-dark);
+}
 
-    .dog-selected-name {
-        position: absolute;
-        padding: 1rem 0;
-        left: 0;
-        right: 0;
-        top: 12rem;
-        text-align: center;
-        width: 100%;
-        background-color: $green;
-        color: white;
-        font-weight: bold;
-        font-size: 130%;
+@media only screen and (max-width: 1300px) {
+  .dog-selected-name {
+    top: 6rem;
+  }
 
-        @media only screen and (max-width: 1300px) {
-            top: 6rem;
-        }
-    }
+  .name {
+    font-size: 100%;
+  }
+}
 
-    .name {
-        border:3px solid $green2;
-        padding: .25rem .5rem;
-        margin: .25rem;
-        transition: all .2s;
-        font-size: 120%;
-        opacity: 1;
-        animation: slowAppear .5s;
-        background-color: white;
-
-        &:hover {
-            cursor: pointer;
-            background-color: #333;
-            color: white;
-            border-color: $green2;
-        }
-
-        @media only screen and (max-width: 1300px) {
-            font-size: 100%;
-        }
-
-        @media only screen and (max-width: 800px) {
-            font-size: 90%;
-        }
-    }
-
+@media only screen and (max-width: 800px) {
+  .name {
+    font-size: 90%;
+  }
+}
 </style>

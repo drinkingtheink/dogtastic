@@ -1,0 +1,67 @@
+/* Element-level defaults, previously spread across App.vue and AppStage.vue. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-size: 16pt;
+  font-family: var(--font-body);
+}
+
+body {
+  padding-right: 1rem;
+}
+
+@media only screen and (max-width: 800px) {
+  body {
+    padding-right: 0;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0;
+  color: var(--color-green);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+button {
+  display: block;
+  text-align: center;
+  margin: 0 auto;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s;
+  border-radius: var(--radius-md);
+  opacity: 0.7;
+  color: var(--color-green-dark);
+  font-family: var(--font-body);
+  border: 0;
+}
+
+button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+button.primary {
+  background-color: var(--color-contrast);
+  color: var(--color-surface);
+  font-size: 80%;
+  font-weight: bold;
+}

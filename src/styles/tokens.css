@@ -1,0 +1,34 @@
+/* Design tokens. These replace the old Sass palette: because they are real
+   custom properties they can be reassigned at runtime, which Sass variables
+   could not do. */
+
+:root {
+  /* Palette (previously src/styles/_palette.scss) */
+  --color-yellow: #fabc09;
+  --color-yellow-light: #facc43;
+  --color-gray: #374353;
+  --color-green: #25bea0;
+  --color-green-dark: #08705b;
+
+  --color-ink: #2c3e50;
+  --color-surface: #ffffff;
+  --color-contrast: #333333;
+
+  /* Type */
+  --font-display: 'Bungee Inline', cursive;
+  --font-body: 'Open Sans', sans-serif;
+
+  /* Shape */
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+
+  /* The dog portrait, which several components size themselves against */
+  --dog-portrait-size: 20em;
+}
+
+@media only screen and (max-width: 1300px) {
+  :root {
+    --dog-portrait-size: 15em;
+  }
+}

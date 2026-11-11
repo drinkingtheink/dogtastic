@@ -1,183 +1,98 @@
 <template>
   <main>
-    <h1 class="app-headline">{{ headline }}</h1>
-    <h2 class="app-subheadline">{{ subHeadline }}</h2>
+    <h1 class="app-headline">{{ HEADLINE }}</h1>
+    <h2 class="app-subheadline">{{ SUB_HEADLINE }}</h2>
+
     <section class="app-panels">
-      <DogSearch 
-        id="dog-search" 
-        class="app-panel" 
-        v-on:newDogForKennel="addDogToKennel"
+      <DogSearch
+        id="dog-search"
+        class="app-panel"
+        @new-dog-for-kennel="add"
       />
-      <Kennel 
-          id="kennel" 
-          class="app-panel" 
-          :dogs="kennelRoster"
-          v-on:removeDogFromKennel="removeDog"
-          v-on:clearKennel="clearKennel"
+      <Kennel
+        id="kennel"
+        class="app-panel yellow-bg"
+        :dogs="roster"
+        @remove-dog-from-kennel="remove"
+        @clear-kennel="clear"
       />
     </section>
   </main>
 </template>
 
-<script>
-import DogSearch from './DogSearch.vue';
-import Kennel from './Kennel.vue';
+<script setup>
+import DogSearch from './DogSearch.vue'
+import Kennel from './Kennel.vue'
+import { useKennel } from '../composables/useKennel'
 
-export default {
-  name: 'AppStage',
-  components: {
-    DogSearch,
-    Kennel
-  },
-  props: {
-    msg: String
-  },
-  data() {
-    return {
-      headline: 'Dogtastic!',
-      subHeadline: 'Name and Claim Your Own Cyber Kennel',
-      kennelRoster:  []
-    }
-  },
-  methods: {
-    addDogToKennel (dog) {
-        this.kennelRoster.unshift(dog);
-    },
-    removeDog (dog) {
-        let filteredRoster  = this.kennelRoster.filter(kennelDog =>  kennelDog.name != dog.name);
-        this.kennelRoster = filteredRoster;
-    },
-    clearKennel () {
-        this.kennelRoster = [];
-    }
-  }
-}
+const HEADLINE = 'Dogtastic!'
+const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
+
+// The roster used to live in this component's data(); it now lives in a
+// composable that also persists it to localStorage.
+const { roster, add, remove, clear } = useKennel()
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-    @import '../styles/typog';
-    @import '../styles/palette';
-    @import '../styles/bgMixin';
-    @import '../styles/breakpoints';
-    @import '../styles/transitions';
-    
-    html,
-    body {
-        padding: 0;
-        margin: 0;
-        font-size: 16pt;
-        font-family: 'Open Sans', sans-serif;
-    }
+<style scoped>
+.app-headline {
+  font-size: 200%;
+}
 
-    body {
-        @include funBg;
-        padding-right: 1rem;
+.app-subheadline {
+  padding-bottom: 0.25rem;
+  color: var(--color-green-dark);
+  font-size: 1em;
+}
 
-        @media only screen and (max-width: 800px) {
-            padding-right: none;
-        }
-    }
+.app-panels {
+  display: flex;
+  align-content: stretch;
+}
 
+.app-panels :deep(h3) {
+  font-size: 150%;
+}
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5 {
-        text-transform: uppercase;
-        margin: 0;
-        padding: 0;
-        color: $green;
-    }
+.app-panel {
+  width: 50vw;
+  min-height: 100vh;
+  padding-top: 1rem;
+}
 
-    h1,
-    h2,
-    h3 {
-        font-family: 'Bungee Inline', cursive;
-    }
+#kennel {
+  border-radius: var(--radius-lg);
+  padding-bottom: 2rem;
+}
 
-    button {
-        display: block;
-        text-align: center;
-        margin: 0 auto;
-        padding: .5rem .75rem;
-        transition: all .2s;
-        border-radius: 10px;
-        opacity: .7;
-        color: $green2;
-        font-family: 'Open Sans', sans-serif;
-        border: 0;
+@media only screen and (max-width: 1300px) {
+  .app-subheadline {
+    font-size: 0.8em;
+  }
 
-        &:hover {
-            cursor: pointer;
-            opacity: 1;
-        }
+  .app-panel :deep(h3) {
+    font-size: 1em;
+  }
+}
 
-        &.primary {
-            background-color: #333;
-            color: white;
-            font-size: 80%;
-            font-weight: bold;
-        }
-    }
+@media only screen and (max-width: 1020px) {
+  .app-panels {
+    display: block;
+  }
 
-    .app-headline {
-        font-size: 200%;
-    }
+  .app-panel {
+    width: 100vw;
+    margin: 0 auto;
+  }
+}
 
-    .app-subheadline {
-        padding-bottom: .25rem;
-        color: $green2;
-        font-size: 1em;
+@media only screen and (max-width: 800px) {
+  .app-subheadline {
+    font-size: 0.6em;
+  }
 
-        @media only screen and (max-width: 1300px) {
-            font-size: .8em;
-        }
-
-        @media only screen and (max-width: 800px) {
-            font-size: .6em;
-        }
-    }
-
-    .app-panels {
-        display: flex;
-        align-content: stretch;
-
-        @media only screen and (max-width: 1020px) {
-            display: block;
-        }
-
-        h3 {
-            font-size: 150%;
-        }
-    }
-
-    .app-panel {
-        width: 50vw;
-        min-height: 100vh;
-        padding-top: 1rem;
-
-        @media only screen and (max-width: 1020px) {
-            width: 100vw;
-            margin: 0 auto;
-        }
-
-        @media only screen and (max-width: 1300px) {
-            h3 {
-                font-size: 1em;
-            }
-        }
-    }
-
-    #kennel {
-        @include yellowBg;
-        border-radius: 20px;
-        padding-bottom: 2rem;
-
-        @media only screen and (max-width: 800px) {
-            margin-top: 1rem;
-            border-radius: none;
-        }
-    }
+  #kennel {
+    margin-top: 1rem;
+    border-radius: 0;
+  }
+}
 </style>
