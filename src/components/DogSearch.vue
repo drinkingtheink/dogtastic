@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>{{ TITLE }}</h3>
+    <h3 class="panel-eyebrow">{{ TITLE }}</h3>
 
     <div class="img-stage">
       <div
@@ -189,6 +189,17 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .name-tg button {
   display: inline-block;
+}
+
+/* An eyebrow rather than a billboard: the portrait is the hero here, and
+   this only needs to label the column. */
+.panel-eyebrow {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  color: var(--color-green-dark);
 }
 
 .dog-actions {

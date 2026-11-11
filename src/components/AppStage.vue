@@ -1,7 +1,9 @@
 <template>
   <main>
-    <h1 class="app-headline">{{ HEADLINE }}</h1>
-    <h2 class="app-subheadline">{{ SUB_HEADLINE }}</h2>
+    <header class="app-header">
+      <h1 class="app-headline">{{ HEADLINE }}</h1>
+      <p class="app-tagline">{{ SUB_HEADLINE }}</p>
+    </header>
 
     <section class="app-panels">
       <DogSearch
@@ -34,16 +36,38 @@ const { roster, add, remove, clear } = useKennel()
 </script>
 
 <style scoped>
-.app-headline {
-  font-size: var(--text-2xl);
-  line-height: 1.05;
+/* Title and tagline share one line so the header costs a band rather than
+   two stacked blocks, handing the height back to the dog. */
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0 var(--space-3);
+  padding: 0 var(--space-4) var(--space-2);
 }
 
-.app-subheadline {
-  padding-bottom: var(--space-1);
+.app-headline {
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.app-tagline {
+  margin: 0;
   color: var(--color-green-dark);
-  font-size: var(--text-base);
-  letter-spacing: 0.02em;
+  font-size: var(--text-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Only worth a separator once the two actually sit side by side. */
+@media only screen and (min-width: 660px) {
+  .app-tagline::before {
+    content: "·";
+    margin-right: var(--space-3);
+    opacity: 0.55;
+  }
 }
 
 .app-panels {
@@ -56,7 +80,9 @@ const { roster, add, remove, clear } = useKennel()
   padding: 0 var(--space-5);
 }
 
-.app-panels :deep(h3) {
+/* Only the kennel still wants a billboard title; the naming column uses a
+   small eyebrow so the portrait is the thing you look at. */
+#kennel :deep(h3) {
   font-size: var(--text-xl);
 }
 
