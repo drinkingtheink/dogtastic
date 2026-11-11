@@ -55,18 +55,22 @@ const bubbles = Array.from({ length: BUBBLE_COUNT }, buildBubble)
 </script>
 
 <style scoped>
+/* Each bubble's dots are placed with vw offsets, so they were always meant
+   to span the window. This used to be absolute inside .img-stage, which was
+   as wide as the column; once that element was narrowed to hug the portrait
+   the dots got sliced off at the circle's edges. Fixed to the viewport, the
+   overflow rule now only trims what is genuinely off-screen. */
 .bubble-canvas {
   pointer-events: none;
-  position: absolute;
-  top: -6rem;
-  width: 100%;
+  position: fixed;
+  inset: 0;
   overflow: hidden;
-  height: 40em;
+  z-index: 59;
 }
 
 .bubbles {
   position: absolute;
-  top: 19rem;
+  top: 72vh;
   width: 15px;
   height: 15px;
   margin-left: -15px;
@@ -75,9 +79,9 @@ const bubbles = Array.from({ length: BUBBLE_COUNT }, buildBubble)
   border-radius: 50%;
 }
 
-@media only screen and (max-width: 1300px) {
+@media (prefers-reduced-motion: reduce) {
   .bubble-canvas {
-    top: -12rem;
+    display: none;
   }
 }
 </style>
