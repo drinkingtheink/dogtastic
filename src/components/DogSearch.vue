@@ -2,7 +2,7 @@
   <div>
     <h3 class="panel-eyebrow">{{ TITLE }}</h3>
 
-    <div class="img-stage">
+    <div class="portrait-frame">
       <div
         ref="portraitEl"
         class="dog-img"
@@ -260,8 +260,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   box-shadow: var(--shadow-lg);
 }
 
-.img-stage + h4,
-.img-stage ~ h4 {
+.portrait-frame ~ h4 {
   margin-top: var(--space-5);
 }
 
@@ -314,11 +313,12 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .dog-img {
   height: var(--dog-portrait-size);
   width: var(--dog-portrait-size);
+  display: block;
   /* A rounded square rather than a circle: a circle discarded about 43% of
      each photo, since most of them are landscape. Proportional so the
      corners keep their shape as the portrait scales, and distinct from the
      kennel cards, which are 3:2 at a much tighter radius. */
-  border-radius: 12%;
+  border-radius: var(--portrait-radius);
   background-color: rgb(255 255 255 / 50%);
   background-size: cover;
   background-position: center;
@@ -367,12 +367,9 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
    pulse rather than one hoop. */
 .shockwave {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--dog-portrait-size);
-  height: var(--dog-portrait-size);
+  inset: 0;
   border: 5px solid var(--color-green);
-  border-radius: 50%;
+  border-radius: var(--portrait-radius);
   pointer-events: none;
   opacity: 0;
   animation: shockwave 1s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
@@ -380,21 +377,27 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 @keyframes shockwave {
   0% {
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
     opacity: 0.8;
     border-width: 5px;
   }
 
   100% {
-    transform: translateX(-50%) scale(2.2);
+    transform: scale(2.2);
     opacity: 0;
     border-width: 1px;
   }
 }
 
-.img-stage {
+/* Anchors the chrome that belongs to the portrait: the badge, the floating
+   button, the banner and the rings. It shrink-wraps rather than restating
+   --dog-portrait-size, so there is one source of truth for how big the
+   portrait is and the two cannot drift apart.
+   Anything meant to cover the window - the confetti canvas - must stay
+   OUTSIDE this element, or it inherits a box the size of the dog. */
+.portrait-frame {
   position: relative;
-  width: var(--dog-portrait-size);
+  width: fit-content;
   margin: 0 auto;
 }
 

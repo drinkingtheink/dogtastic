@@ -61,6 +61,8 @@
   /* The dog portrait. Tied to viewport height so the hero stays large on
      a tall screen without pushing the naming controls off a short one. */
   --dog-portrait-size: clamp(13rem, min(44vh, 78vw), 26rem);
+  /* Shared by the portrait and anything that traces its outline. */
+  --portrait-radius: 12%;
 }
 
 
