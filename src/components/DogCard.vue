@@ -65,6 +65,12 @@ function closeOnBackdrop (event) {
   background-position: center;
 }
 
+/* Beats .dog-card's own position so a card leaving the kennel drops out of
+   flow and the surviving cards can slide into the gap. */
+.dog-card.card-leave-active {
+  position: absolute;
+}
+
 .dog-card:hover .remove-dog,
 .dog-card:focus-within .dog-card-breed {
   display: block;
