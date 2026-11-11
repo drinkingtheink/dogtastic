@@ -29,6 +29,18 @@
       />
     </section>
 
+    <!-- Stacked layouts put the kennel a screen below, so you can name a
+         dog and never see where it went. -->
+    <a
+      v-if="roster.length && !kennelOnScreen"
+      class="kennel-jump"
+      :class="{ receiving }"
+      href="#kennel"
+    >
+      <strong>{{ roster.length }}</strong>
+      in your kennel
+    </a>
+
     <FlyingName
       v-if="flight"
       :key="flight.id"
@@ -41,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import DogSearch from './DogSearch.vue'
 import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
@@ -59,8 +71,11 @@ const kennelRef = ref(null)
 const flight = ref(null)
 const receiving = ref(false)
 
+const kennelOnScreen = ref(true)
+
 let inFlight = null
 let pulseTimer = null
+let kennelObserver = null
 
 /**
  * Lobs the name across to the kennel, and only adds the dog once it
@@ -90,6 +105,22 @@ function sendToKennel (dog) {
   }
 }
 
+onMounted(() => {
+  const el = kennelRef.value?.$el
+  if (!el || !('IntersectionObserver' in window)) return
+
+  kennelObserver = new IntersectionObserver(
+    ([entry]) => { kennelOnScreen.value = entry.isIntersecting },
+    { threshold: 0.08 }
+  )
+  kennelObserver.observe(el)
+})
+
+onBeforeUnmount(() => {
+  kennelObserver?.disconnect()
+  clearTimeout(pulseTimer)
+})
+
 function landDog () {
   if (inFlight) {
     add(inFlight)
@@ -104,6 +135,56 @@ function landDog () {
 </script>
 
 <style scoped>
+/* Only earns its place when the kennel is off-screen, which is a stacked
+   layout problem; side by side it is always in view. */
+.kennel-jump {
+  display: none;
+}
+
+@media only screen and (max-width: 1020px) {
+  .kennel-jump {
+    position: fixed;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-green-plate);
+    color: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--text-xs);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+  }
+
+  .kennel-jump strong {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+
+  .kennel-jump.receiving {
+    animation: kennel-jump-pop 700ms cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+}
+
+@keyframes kennel-jump-pop {
+  0% { transform: translateX(-50%) scale(1); }
+  40% { transform: translateX(-50%) scale(1.12); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kennel-jump.receiving {
+    animation: none;
+  }
+}
+
 /* The naming panel had wide empty margins either side of the portrait, so
    the wordmark moves into the left one and the top band disappears. */
 .naming-column {
