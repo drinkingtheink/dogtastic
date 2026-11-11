@@ -39,7 +39,7 @@
       ref="dialogEl"
       class="full-img-dialog"
       @click="closeOnBackdrop"
-      @close="fullImgOpen = false"
+      @close="scheduleDecorTeardown"
     >
       <!-- Wraps the photo so the decorations land on it, rather than
            spilling into the dialog's caption and buttons. Only mounted
@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, computed, useTemplateRef } from 'vue'
+import { ref, computed, onBeforeUnmount, useTemplateRef } from 'vue'
 import PupDecor from './PupDecor.vue'
 import { useImageStatus } from '../composables/useImageStatus'
 
@@ -160,6 +160,8 @@ function endDrag (event) {
   }
 }
 
+onBeforeUnmount(() => clearTimeout(teardownTimer))
+
 function recentre () {
   commit({ x: 0.5, y: 0.5 })
 }
@@ -192,9 +194,20 @@ const dialogEl = useTemplateRef('dialogEl')
 
 const fullImgOpen = ref(false)
 
+const EXIT_MS = 260
+let teardownTimer = null
+
 function openFullImg () {
+  clearTimeout(teardownTimer)
   fullImgOpen.value = true
   dialogEl.value.showModal()
+}
+
+/* Held until the dialog has finished animating out, otherwise the
+   decorations vanish a beat before the modal does. */
+function scheduleDecorTeardown () {
+  clearTimeout(teardownTimer)
+  teardownTimer = setTimeout(() => { fullImgOpen.value = false }, EXIT_MS)
 }
 
 /* Clicks on the backdrop land on the dialog element itself, since the
@@ -340,10 +353,59 @@ function closeOnBackdrop (event) {
   background-color: var(--color-surface);
   box-shadow: var(--shadow-lg);
   max-width: min(90vw, 40rem);
+
+  /* A closed dialog goes straight to display: none, so an exit animation
+     needs the discrete properties carried along with the visible ones.
+     allow-discrete holds display and overlay open until the transition
+     finishes; @starting-style gives the entry somewhere to come from. */
+  opacity: 0;
+  transform: scale(0.92) translateY(12px);
+  transition:
+    opacity 220ms ease,
+    transform 260ms cubic-bezier(0.2, 1.3, 0.4, 1),
+    overlay 260ms allow-discrete,
+    display 260ms allow-discrete;
+}
+
+.full-img-dialog[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@starting-style {
+  .full-img-dialog[open] {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
 }
 
 .full-img-dialog::backdrop {
+  background-color: rgb(55 67 83 / 0%);
+  transition:
+    background-color 220ms ease,
+    overlay 260ms allow-discrete,
+    display 260ms allow-discrete;
+}
+
+.full-img-dialog[open]::backdrop {
   background-color: rgb(55 67 83 / 70%);
+}
+
+@starting-style {
+  .full-img-dialog[open]::backdrop {
+    background-color: rgb(55 67 83 / 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .full-img-dialog,
+  .full-img-dialog::backdrop {
+    transition-duration: 1ms;
+  }
+
+  .full-img-dialog {
+    transform: none;
+  }
 }
 
 .full-img-frame {

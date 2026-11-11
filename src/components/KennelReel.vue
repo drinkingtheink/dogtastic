@@ -81,7 +81,10 @@ const dialogEl = useTemplateRef('dialogEl')
 const index = ref(-1)
 const ready = ref(false)
 
+const EXIT_MS = 320
+
 let timer = null
+let teardownTimer = null
 
 const current = computed(() => props.dogs[index.value] ?? null)
 
@@ -113,6 +116,7 @@ function advance () {
 }
 
 async function open () {
+  clearTimeout(teardownTimer)
   index.value = -1
   ready.value = false
   dialogEl.value.showModal()
@@ -136,17 +140,23 @@ function stop () {
   timer = null
 
   /* A closed dialog still renders its contents, so without this the last
-     slide and its decorations stay in the document. open() resets these
-     anyway; this just stops them lingering in between. */
-  ready.value = false
-  index.value = -1
+     slide and its decorations stay in the document. Held until the dialog
+     has animated out, or the slide blinks away before the fade. */
+  clearTimeout(teardownTimer)
+  teardownTimer = setTimeout(() => {
+    ready.value = false
+    index.value = -1
+  }, EXIT_MS)
 }
 
 function closeOnBackdrop (event) {
   if (event.target === dialogEl.value) dialogEl.value.close()
 }
 
-onBeforeUnmount(stop)
+onBeforeUnmount(() => {
+  clearTimeout(timer)
+  clearTimeout(teardownTimer)
+})
 </script>
 
 <style scoped>
@@ -164,10 +174,57 @@ onBeforeUnmount(stop)
   overflow: hidden;
   background-color: #0b3b32;
   color: var(--color-surface);
+
+  /* Opens like a house light going down rather than appearing all at once.
+     allow-discrete keeps display and overlay alive for the way out. */
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity 260ms ease,
+    transform 320ms cubic-bezier(0.2, 0.8, 0.3, 1),
+    overlay 320ms allow-discrete,
+    display 320ms allow-discrete;
+}
+
+.reel[open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  .reel[open] {
+    opacity: 0;
+    transform: scale(1.04);
+  }
 }
 
 .reel::backdrop {
+  background-color: rgb(11 59 50 / 0%);
+  transition:
+    background-color 260ms ease,
+    overlay 320ms allow-discrete,
+    display 320ms allow-discrete;
+}
+
+.reel[open]::backdrop {
   background-color: rgb(11 59 50 / 90%);
+}
+
+@starting-style {
+  .reel[open]::backdrop {
+    background-color: rgb(11 59 50 / 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel,
+  .reel::backdrop {
+    transition-duration: 1ms;
+  }
+
+  .reel {
+    transform: none;
+  }
 }
 
 .reel-loading,
