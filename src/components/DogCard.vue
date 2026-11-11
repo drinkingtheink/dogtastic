@@ -35,7 +35,16 @@
 
     <!-- A real modal dialog: showModal() brings the backdrop, Esc-to-close
          and the focus trap that v-show alone could never provide. -->
-    <dialog ref="dialogEl" class="full-img-dialog" @click="closeOnBackdrop">
+    <dialog
+      ref="dialogEl"
+      class="full-img-dialog"
+      @click="closeOnBackdrop"
+      @close="fullImgOpen = false"
+    >
+      <!-- Only while it is open: a dialog's contents render whether or not
+           it is showing, and every card has one. -->
+      <PupDecor v-if="fullImgOpen" :count="20" theme="light" />
+
       <img class="full-img" :src="dog.image" :alt="`${dog.name}, at full size`">
       <p class="full-img-caption">
         <strong>{{ dog.name }}</strong>
@@ -50,6 +59,7 @@
 
 <script setup>
 import { ref, computed, useTemplateRef } from 'vue'
+import PupDecor from './PupDecor.vue'
 import { useImageStatus } from '../composables/useImageStatus'
 
 const props = defineProps({
@@ -170,7 +180,10 @@ const initial = computed(() => props.dog.name.trim().charAt(0).toUpperCase())
 
 const dialogEl = useTemplateRef('dialogEl')
 
+const fullImgOpen = ref(false)
+
 function openFullImg () {
+  fullImgOpen.value = true
   dialogEl.value.showModal()
 }
 
@@ -310,6 +323,7 @@ function closeOnBackdrop (event) {
 }
 
 .full-img-dialog {
+  position: relative;
   border: 0;
   border-radius: var(--radius-lg);
   padding: var(--space-4);

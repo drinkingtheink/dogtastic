@@ -38,6 +38,8 @@
           class="reel-photo"
           :style="{ backgroundImage: `url('${current.image}')` }"
         />
+        <PupDecor :count="26" theme="dark" animated />
+
         <figcaption class="reel-caption">
           <p class="reel-name">{{ current.name }}</p>
           <p v-if="current.breed" class="reel-breed">{{ current.breed }}</p>
@@ -61,6 +63,7 @@
 <script setup>
 import { ref, computed, onBeforeUnmount, useTemplateRef } from 'vue'
 import Confetti from './Confetti.vue'
+import PupDecor from './PupDecor.vue'
 
 const props = defineProps({
   dogs: {
@@ -131,6 +134,12 @@ function restart () {
 function stop () {
   clearTimeout(timer)
   timer = null
+
+  /* A closed dialog still renders its contents, so without this the last
+     slide and its decorations stay in the document. open() resets these
+     anyway; this just stops them lingering in between. */
+  ready.value = false
+  index.value = -1
 }
 
 function closeOnBackdrop (event) {
