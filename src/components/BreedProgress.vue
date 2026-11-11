@@ -20,14 +20,30 @@
         :key="breed"
         class="breed-dot"
         :class="{ collected: collected.has(breed) }"
-        :title="collected.has(breed) ? `${breed} — collected` : breed"
+        @mouseenter="showTip(breed, $event)"
+        @mouseleave="hideTip"
       />
     </div>
+
+    <!-- Out to the body so the rail's bounds cannot clip it. -->
+    <Teleport to="body">
+      <div
+        v-if="tip"
+        ref="tipEl"
+        class="breed-tip"
+        :class="{ collected: tip.collected }"
+        :style="{ left: `${tip.left}px`, top: `${tip.top}px` }"
+        aria-hidden="true"
+      >
+        {{ tip.breed }}
+        <span class="breed-tip-state">{{ tip.collected ? 'collected' : 'not yet' }}</span>
+      </div>
+    </Teleport>
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, nextTick, useTemplateRef } from 'vue'
 import { useBreedCatalog } from '../composables/useBreedCatalog'
 
 const props = defineProps({
@@ -48,6 +64,37 @@ const collected = computed(
 const collectedCount = computed(
   () => catalog.value.filter(breed => collected.value.has(breed)).length
 )
+
+const tipEl = useTemplateRef('tipEl')
+const tip = ref(null)
+
+const TIP_GAP = 10
+
+/* Sits to the right of the dot rather than above it: the meter lives at the
+   left edge of the page, where a centred tooltip runs off screen. */
+async function showTip (breed, event) {
+  const dot = event.currentTarget.getBoundingClientRect()
+
+  tip.value = {
+    breed,
+    collected: collected.value.has(breed),
+    left: dot.right + TIP_GAP,
+    top: dot.top + dot.height / 2
+  }
+
+  await nextTick()
+  if (!tipEl.value || !tip.value) return
+
+  // Flip to the other side when it would run past the window.
+  const width = tipEl.value.offsetWidth
+  if (tip.value.left + width > window.innerWidth - 8) {
+    tip.value = { ...tip.value, left: dot.left - TIP_GAP - width }
+  }
+}
+
+function hideTip () {
+  tip.value = null
+}
 </script>
 
 <style scoped>
@@ -96,10 +143,19 @@ const collectedCount = computed(
 /* The track: the same hue as the marks, dropped to a tint, so the meter
    reads as one scale rather than two colours. */
 .breed-dot {
+  position: relative;
   aspect-ratio: 1;
   border-radius: 50%;
   background-color: rgb(18 131 109 / 16%);
   transition: transform 0.15s ease;
+}
+
+/* A 9px mark is a poor target for a cursor, so the hit area is grown past
+   the dot without disturbing the grid. */
+.breed-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
 }
 
 .breed-dot.collected {
@@ -133,5 +189,41 @@ const collectedCount = computed(
   .breed-dot:hover {
     transform: none;
   }
+}
+</style>
+
+<!-- The tooltip is teleported to the body, so it is out of this
+     component's scope and styled globally. -->
+<style>
+.breed-tip {
+  position: fixed;
+  z-index: 80;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background-color: var(--color-green-dark);
+  color: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+}
+
+.breed-tip-state {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.breed-tip.collected .breed-tip-state {
+  color: var(--color-green);
+  opacity: 1;
 }
 </style>
