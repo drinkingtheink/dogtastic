@@ -7,6 +7,8 @@
             <span>Dog</span><span>tastic!</span>
           </h1>
           <p class="app-tagline">{{ SUB_HEADLINE }}</p>
+
+          <BrandMark class="brand-mark-slot" />
         </header>
 
         <DogSearch
@@ -41,6 +43,7 @@ import { ref } from 'vue'
 import DogSearch from './DogSearch.vue'
 import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
+import BrandMark from './BrandMark.vue'
 import { useKennel } from '../composables/useKennel'
 
 const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
@@ -122,6 +125,12 @@ function landDog () {
   display: block;
 }
 
+.brand-mark-slot {
+  width: clamp(3.5rem, 6vw, 5.5rem);
+  margin-top: var(--space-4);
+  color: var(--color-green-dark);
+}
+
 .app-tagline {
   margin: var(--space-3) 0 0;
   color: var(--color-green-dark);
@@ -154,6 +163,10 @@ function landDog () {
 
   .app-tagline {
     margin-top: var(--space-1);
+  }
+
+  .brand-mark-slot {
+    margin: var(--space-3) auto 0;
   }
 }
 
