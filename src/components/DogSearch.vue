@@ -319,7 +319,11 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .dog-img {
   height: var(--dog-portrait-size);
   width: var(--dog-portrait-size);
-  border-radius: 50%;
+  /* A rounded square rather than a circle: a circle discarded about 43% of
+     each photo, since most of them are landscape. Proportional so the
+     corners keep their shape as the portrait scales, and distinct from the
+     kennel cards, which are 3:2 at a much tighter radius. */
+  border-radius: 12%;
   background-color: rgb(255 255 255 / 50%);
   background-size: cover;
   background-position: center;
