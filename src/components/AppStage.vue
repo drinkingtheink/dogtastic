@@ -1,16 +1,19 @@
 <template>
   <main>
-    <header class="app-header">
-      <h1 class="app-headline">{{ HEADLINE }}</h1>
-      <p class="app-tagline">{{ SUB_HEADLINE }}</p>
-    </header>
-
     <section class="app-panels">
-      <DogSearch
-        id="dog-search"
-        class="app-panel"
-        @new-dog-for-kennel="sendToKennel"
-      />
+      <div class="naming-column app-panel">
+        <header class="app-header">
+          <h1 class="app-headline">
+            <span>Dog</span><span>tastic!</span>
+          </h1>
+          <p class="app-tagline">{{ SUB_HEADLINE }}</p>
+        </header>
+
+        <DogSearch
+          id="dog-search"
+          @new-dog-for-kennel="sendToKennel"
+        />
+      </div>
       <Kennel
         id="kennel"
         ref="kennelRef"
@@ -40,7 +43,6 @@ import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
 import { useKennel } from '../composables/useKennel'
 
-const HEADLINE = 'Dogtastic!'
 const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
 
 // The roster used to live in this component's data(); it now lives in a
@@ -96,37 +98,62 @@ function landDog () {
 </script>
 
 <style scoped>
-/* Title and tagline share one line so the header costs a band rather than
-   two stacked blocks, handing the height back to the dog. */
-.app-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0 var(--space-3);
-  padding: 0 var(--space-4) var(--space-2);
+/* The naming panel had wide empty margins either side of the portrait, so
+   the wordmark moves into the left one and the top band disappears. */
+.naming-column {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) 1fr;
+  align-items: start;
+  gap: var(--space-4);
 }
 
+.app-header {
+  padding-top: var(--space-4);
+  text-align: left;
+}
+
+/* Split across lines so it fits a narrow rail without shrinking away. */
 .app-headline {
-  font-size: var(--text-2xl);
-  line-height: 1;
+  font-size: clamp(1.75rem, 1rem + 2.6vw, 3.25rem);
+  line-height: 0.92;
+}
+
+.app-headline span {
+  display: block;
 }
 
 .app-tagline {
-  margin: 0;
+  margin: var(--space-3) 0 0;
   color: var(--color-green-dark);
   font-size: var(--text-xs);
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  line-height: 1.4;
 }
 
-/* Only worth a separator once the two actually sit side by side. */
-@media only screen and (min-width: 660px) {
-  .app-tagline::before {
-    content: "·";
-    margin-right: var(--space-3);
-    opacity: 0.55;
+/* Too narrow for a rail: the brand goes back above, on one line. */
+@media only screen and (max-width: 860px) {
+  .naming-column {
+    display: block;
+  }
+
+  .app-header {
+    padding: 0 var(--space-4) var(--space-2);
+    text-align: center;
+  }
+
+  .app-headline {
+    font-size: var(--text-2xl);
+    line-height: 1;
+  }
+
+  .app-headline span {
+    display: inline;
+  }
+
+  .app-tagline {
+    margin-top: var(--space-1);
   }
 }
 
