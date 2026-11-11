@@ -110,7 +110,7 @@ function pinLeavingCard (el) {
 .kennel-breed-count {
   margin: 0.1rem 0 0.75rem;
   color: var(--color-green-dark);
-  font-size: 70%;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: bold;

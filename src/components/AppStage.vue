@@ -35,13 +35,14 @@ const { roster, add, remove, clear } = useKennel()
 
 <style scoped>
 .app-headline {
-  font-size: 200%;
+  font-size: var(--text-3xl);
+  line-height: 1.05;
 }
 
 .app-subheadline {
-  padding-bottom: 0.25rem;
+  padding-bottom: var(--space-1);
   color: var(--color-green-dark);
-  font-size: 1em;
+  font-size: var(--text-lg);
 }
 
 .app-panels {
@@ -50,7 +51,7 @@ const { roster, add, remove, clear } = useKennel()
 }
 
 .app-panels :deep(h3) {
-  font-size: 150%;
+  font-size: var(--text-xl);
 }
 
 .app-panel {
@@ -62,16 +63,6 @@ const { roster, add, remove, clear } = useKennel()
 #kennel {
   border-radius: var(--radius-lg);
   padding-bottom: 2rem;
-}
-
-@media only screen and (max-width: 1300px) {
-  .app-subheadline {
-    font-size: 0.8em;
-  }
-
-  .app-panel :deep(h3) {
-    font-size: 1em;
-  }
 }
 
 @media only screen and (max-width: 1020px) {
@@ -86,10 +77,6 @@ const { roster, add, remove, clear } = useKennel()
 }
 
 @media only screen and (max-width: 800px) {
-  .app-subheadline {
-    font-size: 0.6em;
-  }
-
   #kennel {
     margin-top: 1rem;
     border-radius: 0;

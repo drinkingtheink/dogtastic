@@ -174,12 +174,12 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .dog-breed {
   display: inline-block;
-  margin: 0.6rem auto 0;
-  padding: 0.2rem 0.9rem;
+  margin: var(--space-3) auto 0;
+  padding: var(--space-1) var(--space-4);
   border-radius: 999px;
   background-color: var(--color-green-plate);
   color: var(--color-surface);
-  font-size: 75%;
+  font-size: var(--text-xs);
   font-weight: bold;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -187,7 +187,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .names-loading {
   color: var(--color-green-dark);
-  font-size: 80%;
+  font-size: var(--text-sm);
 }
 
 .dog-img {
@@ -222,7 +222,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   background-color: var(--color-green-plate);
   color: var(--color-surface);
   font-weight: bold;
-  font-size: 130%;
+  font-size: var(--text-lg);
 }
 
 .custom-name {
@@ -235,7 +235,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   display: block;
   margin-bottom: 0.4rem;
   color: var(--color-green-dark);
-  font-size: 75%;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: bold;
@@ -254,7 +254,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   border-radius: var(--radius-sm);
   padding: 0.3rem 0.6rem;
   font-family: var(--font-body);
-  font-size: 95%;
+  font-size: var(--text-base);
   background-color: var(--color-surface);
   color: var(--color-ink);
 }
@@ -281,15 +281,15 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 
 .dog-error {
   color: var(--color-green-dark);
-  font-size: 80%;
+  font-size: var(--text-sm);
 }
 
 .name {
   border: 3px solid var(--color-green-dark);
-  padding: 0.25rem 0.5rem;
-  margin: 0.25rem;
+  padding: var(--space-2) var(--space-3);
+  margin: var(--space-1);
   transition: all 0.2s;
-  font-size: 120%;
+  font-size: var(--text-base);
   opacity: 1;
   animation: slow-appear 0.5s;
   background-color: var(--color-surface);
@@ -305,16 +305,6 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 @media only screen and (max-width: 1300px) {
   .dog-selected-name {
     top: 6rem;
-  }
-
-  .name {
-    font-size: 100%;
-  }
-}
-
-@media only screen and (max-width: 800px) {
-  .name {
-    font-size: 90%;
   }
 }
 </style>

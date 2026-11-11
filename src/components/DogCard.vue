@@ -75,7 +75,7 @@ function closeOnBackdrop (event) {
 .dog-card:focus-within .dog-card-breed {
   display: block;
   font-weight: normal;
-  font-size: 0.6rem;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.85;
@@ -84,7 +84,7 @@ function closeOnBackdrop (event) {
 .full-img-caption {
   margin: 0.75rem 0 0;
   color: var(--color-ink);
-  font-size: 90%;
+  font-size: var(--text-sm);
 }
 
 .remove-dog {
@@ -101,7 +101,7 @@ function closeOnBackdrop (event) {
   padding: 0.2rem 0;
   font-weight: bold;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: var(--text-base);
   border: 0;
   border-radius: 0;
   opacity: 1;
@@ -111,7 +111,7 @@ function closeOnBackdrop (event) {
 .dog-card-breed {
   display: block;
   font-weight: normal;
-  font-size: 0.6rem;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.85;
@@ -120,7 +120,7 @@ function closeOnBackdrop (event) {
 .full-img-caption {
   margin: 0.75rem 0 0;
   color: var(--color-ink);
-  font-size: 90%;
+  font-size: var(--text-sm);
 }
 
 .remove-dog {
