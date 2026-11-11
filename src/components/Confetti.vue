@@ -17,8 +17,8 @@ const emit = defineEmits(['done'])
 
 const canvasEl = useTemplateRef('canvasEl')
 
-/* Brand greens and yellows first so the burst reads as this app's, with
-   the old Bubbles palette mixed in to keep the party colours. */
+/* Brand greens and yellows first so the burst reads as this app's, with a
+   spread of party colours behind them. */
 const COLORS = [
   '#25bea0', '#12836d', '#fabc09', '#facc43', '#00d0c5',
   'gold', 'orange', 'tomato', 'hotpink', 'violet',

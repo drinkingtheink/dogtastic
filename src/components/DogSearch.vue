@@ -24,10 +24,6 @@
       </template>
 
       <Transition name="fade">
-        <Bubbles v-if="selectedName" />
-      </Transition>
-
-      <Transition name="fade">
         <p v-if="selectedName" class="dog-selected-name">
           Welcome, {{ selectedName }}!
         </p>
@@ -108,7 +104,6 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
-import Bubbles from './Bubbles.vue'
 import Confetti from './Confetti.vue'
 import { useDogApi } from '../composables/useDogApi'
 import { useNames } from '../composables/useNames'
