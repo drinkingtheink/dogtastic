@@ -9,9 +9,13 @@
     <div class="img-stage">
       <div
         class="dog-img"
-        :class="{ 'in-process': loading }"
-        :style="{ backgroundImage: image ? `url('${image}')` : 'none' }"
-      />
+        :class="{ 'in-process': loading, 'dog-img-failed': imageFailed }"
+        :style="portraitStyle"
+      >
+        <p v-if="imageFailed" class="dog-img-fallback">
+          This pooch would not sit for a portrait
+        </p>
+      </div>
 
       <Transition name="fade">
         <Bubbles v-if="selectedName" />
@@ -85,6 +89,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import Bubbles from './Bubbles.vue'
 import { useDogApi } from '../composables/useDogApi'
 import { useNames } from '../composables/useNames'
+import { useImageStatus } from '../composables/useImageStatus'
 
 const TITLE = 'Name that Pooch'
 const PROMPT = 'What name is worthy of this magnificent creature?'
@@ -96,6 +101,15 @@ const BANNER_CLEAR_MS = CELEBRATION_MS + 900
 const emit = defineEmits(['newDogForKennel'])
 
 const { image, breed, loading, error, fetchDog } = useDogApi()
+const { status: imageStatus } = useImageStatus(image)
+const imageFailed = computed(() => imageStatus.value === 'error')
+
+/* Returns an empty object rather than `background-image: none` when the
+   photo is missing: an inline style would outrank the stylesheet and stop
+   .dog-img-failed painting its gradient. */
+const portraitStyle = computed(() =>
+  imageFailed.value || !image.value ? {} : { backgroundImage: `url('${image.value}')` }
+)
 const { names, loading: namesLoading, drawNames, removeName } = useNames()
 
 const selectedName = ref(null)
@@ -203,6 +217,22 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
     0 0 0 10px var(--color-green),
     var(--shadow-lg);
   transition: opacity 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dog-img-failed {
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background:
+    linear-gradient(140deg, var(--color-green-plate), var(--color-green-dark));
+}
+
+.dog-img-fallback {
+  margin: 0;
+  color: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
 }
 
 .dog-img.in-process {

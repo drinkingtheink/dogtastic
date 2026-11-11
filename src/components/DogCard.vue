@@ -3,6 +3,11 @@
     class="dog-card"
     :style="{ backgroundImage: `url('${dog.image}')` }"
   >
+    <p v-if="imageFailed" class="dog-card-fallback">
+      <span class="dog-card-initial">{{ initial }}</span>
+      <span class="dog-card-fallback-note">photo ran off</span>
+    </p>
+
     <button class="dog-card-name" @click="openFullImg">
       {{ dog.name }}
       <span v-if="dog.breed" class="dog-card-breed">{{ dog.breed }}</span>
@@ -28,9 +33,10 @@
 </template>
 
 <script setup>
-import { useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
+import { useImageStatus } from '../composables/useImageStatus'
 
-defineProps({
+const props = defineProps({
   dog: {
     type: Object,
     required: true
@@ -38,6 +44,10 @@ defineProps({
 })
 
 const emit = defineEmits(['removeDogFromKennel'])
+
+const { status } = useImageStatus(() => props.dog.image)
+const imageFailed = computed(() => status.value === 'error')
+const initial = computed(() => props.dog.name.trim().charAt(0).toUpperCase())
 
 const dialogEl = useTemplateRef('dialogEl')
 
@@ -77,6 +87,33 @@ function closeOnBackdrop (event) {
    flow and the surviving cards can slide into the gap. */
 .dog-card.card-leave-active {
   position: absolute;
+}
+
+.dog-card-fallback {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background:
+    linear-gradient(140deg, var(--color-green-plate), var(--color-green-dark));
+  color: var(--color-surface);
+}
+
+.dog-card-initial {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.dog-card-fallback-note {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
 }
 
 .dog-card-name {
