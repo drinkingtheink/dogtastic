@@ -62,7 +62,7 @@
         Give them a name
       </label>
 
-      <div class="custom-name-row">
+      <div ref="customRowEl" class="custom-name-row">
         <input
           id="custom-name-input"
           v-model="customName"
@@ -91,7 +91,7 @@
           v-for="name in names"
           :key="name"
           class="name"
-          @click="claimDog(name)"
+          @click="claimDog(name, $event.currentTarget)"
         >
           {{ name }}
         </button>
@@ -138,6 +138,7 @@ const selectedName = ref(null)
 const customName = ref('')
 
 const portraitEl = useTemplateRef('portraitEl')
+const customRowEl = useTemplateRef('customRowEl')
 const confettiOn = ref(false)
 const confettiOrigin = ref({ x: 0.5, y: 0.45 })
 
@@ -164,14 +165,27 @@ function portraitCentre () {
   }
 }
 
-function claimDog (name) {
+/** Centre of an element in viewport pixels, for the name's flight path. */
+function centreOf (el) {
+  const box = el?.getBoundingClientRect()
+  if (!box) return null
+  return { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+}
+
+function claimDog (name, originEl) {
   selectedName.value = name
   removeName(name)
 
   confettiOrigin.value = portraitCentre()
   confettiOn.value = true
 
-  emit('newDogForKennel', { name, image: image.value, breed: breed.value })
+  emit('newDogForKennel', {
+    name,
+    image: image.value,
+    breed: breed.value,
+    // Where the name should launch from on its way to the kennel.
+    origin: centreOf(originEl)
+  })
 
   later(fetchDog, CELEBRATION_MS)
   later(() => { selectedName.value = null }, BANNER_CLEAR_MS)
@@ -182,7 +196,7 @@ function claimCustomName () {
 
   const name = customName.value.trim()
   customName.value = ''
-  claimDog(name)
+  claimDog(name, customRowEl.value)
 }
 
 // Refill the gallery once it has been emptied.

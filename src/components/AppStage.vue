@@ -9,22 +9,35 @@
       <DogSearch
         id="dog-search"
         class="app-panel"
-        @new-dog-for-kennel="add"
+        @new-dog-for-kennel="sendToKennel"
       />
       <Kennel
         id="kennel"
+        ref="kennelRef"
         class="app-panel yellow-bg"
+        :class="{ receiving }"
         :dogs="roster"
         @remove-dog-from-kennel="remove"
         @clear-kennel="clear"
       />
     </section>
+
+    <FlyingName
+      v-if="flight"
+      :key="flight.id"
+      :text="flight.name"
+      :from="flight.from"
+      :to="flight.to"
+      @done="landDog"
+    />
   </main>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import DogSearch from './DogSearch.vue'
 import Kennel from './Kennel.vue'
+import FlyingName from './FlyingName.vue'
 import { useKennel } from '../composables/useKennel'
 
 const HEADLINE = 'Dogtastic!'
@@ -33,6 +46,53 @@ const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
 // The roster used to live in this component's data(); it now lives in a
 // composable that also persists it to localStorage.
 const { roster, add, remove, clear } = useKennel()
+
+const kennelRef = ref(null)
+const flight = ref(null)
+const receiving = ref(false)
+
+let inFlight = null
+let pulseTimer = null
+
+/**
+ * Lobs the name across to the kennel, and only adds the dog once it
+ * lands, so the card appears exactly when the name arrives.
+ */
+function sendToKennel (dog) {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const kennelBox = kennelRef.value?.$el?.getBoundingClientRect()
+
+  if (reduceMotion || !kennelBox || !dog.origin) {
+    add(dog)
+    return
+  }
+
+  // A dog already mid-flight lands immediately rather than being dropped.
+  if (inFlight) add(inFlight)
+
+  inFlight = dog
+  flight.value = {
+    id: `${dog.name}-${Date.now()}`,
+    name: dog.name,
+    from: dog.origin,
+    to: {
+      x: kennelBox.left + kennelBox.width / 2,
+      y: kennelBox.top + Math.min(110, kennelBox.height / 2)
+    }
+  }
+}
+
+function landDog () {
+  if (inFlight) {
+    add(inFlight)
+    inFlight = null
+  }
+
+  flight.value = null
+  receiving.value = true
+  clearTimeout(pulseTimer)
+  pulseTimer = setTimeout(() => { receiving.value = false }, 700)
+}
 </script>
 
 <style scoped>
@@ -97,6 +157,40 @@ const { roster, add, remove, clear } = useKennel()
 
 /* The kennel rides along while you scroll the naming column, scrolling
    internally once it outgrows the viewport. */
+/* A ripple off the panel edge as a dog lands. Deliberately not a
+   transform: #kennel is sticky, and transforms on sticky elements are
+   a good way to get surprising results. */
+#kennel.receiving {
+  animation: kennel-receive 700ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes kennel-receive {
+  0% {
+    box-shadow: var(--shadow-md), 0 0 0 0 rgb(37 190 160 / 70%);
+  }
+
+  100% {
+    box-shadow: var(--shadow-md), 0 0 0 26px rgb(37 190 160 / 0%);
+  }
+}
+
+#kennel.receiving :deep(.kennel-count-display) {
+  animation: count-pop 700ms cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+@keyframes count-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #kennel.receiving,
+  #kennel.receiving :deep(.kennel-count-display) {
+    animation: none;
+  }
+}
+
 #kennel {
   position: sticky;
   top: var(--space-4);
