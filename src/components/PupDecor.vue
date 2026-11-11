@@ -10,6 +10,7 @@
     @pointermove="onDrag"
     @pointerup="endDrag"
     @pointercancel="endDrag"
+    @lostpointercapture="endDrag"
   >
     <span
       v-for="item in motif.items"
@@ -84,6 +85,10 @@ const clamp = value => Math.min(45, Math.max(-45, value))
 function startDrag (event) {
   if (!props.movable) return
 
+  // This card's ancestors drag too; the gesture belongs to whichever
+  // layer it started on.
+  event.stopPropagation()
+
   origin = {
     pointerX: event.clientX,
     pointerY: event.clientY,
@@ -102,6 +107,13 @@ function startDrag (event) {
 
 function onDrag (event) {
   if (!origin) return
+
+  // If the button came up somewhere this element never heard about, the
+  // drag is over. Without this the motif followed the cursor forever.
+  if (event.buttons === 0) {
+    endDrag(event)
+    return
+  }
 
   preview.value = {
     x: clamp(origin.x + ((event.clientX - origin.pointerX) / origin.width) * 100),

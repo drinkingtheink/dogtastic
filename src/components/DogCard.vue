@@ -162,6 +162,12 @@ function startDrag (event) {
   // Leave the buttons and the name alone.
   if (event.target.closest('button')) return
 
+  /* The close-up dialog is a child of this card, so everything that
+     happens inside it bubbles out to here. Without this the card was
+     reframing its own photo while you dragged the motif, and winning the
+     pointer capture, which left the motif stuck to the cursor. */
+  if (event.target.closest('dialog')) return
+
   origin = {
     pointerX: event.clientX,
     pointerY: event.clientY,
