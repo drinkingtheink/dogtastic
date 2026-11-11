@@ -9,6 +9,8 @@
           <p class="app-tagline">{{ SUB_HEADLINE }}</p>
 
           <BrandMark class="brand-mark-slot" />
+
+          <BreedProgress :dogs="roster" />
         </header>
 
         <DogSearch
@@ -44,6 +46,7 @@ import DogSearch from './DogSearch.vue'
 import Kennel from './Kennel.vue'
 import FlyingName from './FlyingName.vue'
 import BrandMark from './BrandMark.vue'
+import BreedProgress from './BreedProgress.vue'
 import { useKennel } from '../composables/useKennel'
 
 const SUB_HEADLINE = 'Name and Claim Your Own Cyber Kennel'
