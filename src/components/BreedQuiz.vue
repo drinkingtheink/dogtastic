@@ -52,7 +52,7 @@
             class="quiz-option"
             :class="optionClass(option)"
             :disabled="status === 'answered'"
-            @click="answer(option)"
+            @click="choose(option, $event)"
           >
             <span v-if="status === 'answered' && option === question.answer" aria-hidden="true">&#10003;</span>
             <span
@@ -64,9 +64,23 @@
         </li>
       </ul>
 
-      <p v-if="status === 'answered'" class="quiz-verdict-line" role="status">
+      <p
+        v-if="status === 'answered'"
+        class="quiz-verdict-line"
+        :class="{ cheering: wasRight }"
+        role="status"
+      >
         {{ wasRight ? 'Correct!' : `It was a ${question.answer}.` }}
       </p>
+
+      <!-- A cone out of the button you picked, not the full works: this
+           happens up to eight times a round. -->
+      <Confetti
+        v-if="cheer"
+        :origin="cheer"
+        intensity="small"
+        @done="cheer = null"
+      />
 
       <button v-if="status === 'answered'" class="primary quiz-next" @click="advance">
         {{ isLastQuestion ? 'See the score' : 'Next dog' }}
@@ -76,7 +90,7 @@
 </template>
 
 <script setup>
-import { computed, useTemplateRef } from 'vue'
+import { ref, computed, useTemplateRef } from 'vue'
 import Confetti from './Confetti.vue'
 import { useBreedCatalog } from '../composables/useBreedCatalog'
 import { useBreedQuiz, ROUND_LENGTH } from '../composables/useBreedQuiz'
@@ -97,6 +111,23 @@ const verdict = computed(() => {
   if (ratio >= 0.25) return 'Room to grow. They all have four legs though.'
   return 'Every one of them was a good dog regardless.'
 })
+
+const cheer = ref(null)
+
+/* Fires from the button that was clicked, so the burst comes out of the
+   answer rather than the middle of the dialog. */
+function choose (option, event) {
+  const right = option === question.value?.answer
+  answer(option)
+
+  if (!right) return
+
+  const box = event.currentTarget.getBoundingClientRect()
+  cheer.value = {
+    x: (box.left + box.width / 2) / window.innerWidth,
+    y: (box.top + box.height / 2) / window.innerHeight
+  }
+}
 
 function optionClass (option) {
   if (status.value !== 'answered') return null
@@ -268,6 +299,14 @@ function open () {
   background-color: var(--color-green-dark);
   border-color: var(--color-green-dark);
   color: var(--color-surface);
+  animation: quiz-pop 560ms cubic-bezier(0.2, 1.6, 0.35, 1);
+}
+
+@keyframes quiz-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.06); }
+  60% { transform: scale(0.985); }
+  100% { transform: scale(1); }
 }
 
 .quiz-option.wrong {
@@ -288,6 +327,19 @@ function open () {
   margin: var(--space-4) 0 0;
   color: var(--color-green-dark);
   font-weight: 700;
+}
+
+.quiz-verdict-line.cheering {
+  color: var(--color-green-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  animation: quiz-stamp 480ms cubic-bezier(0.16, 1.6, 0.4, 1);
+}
+
+@keyframes quiz-stamp {
+  0% { transform: scale(1.9) rotate(-8deg); opacity: 0; }
+  55% { transform: scale(0.94) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
 .quiz-next {
@@ -325,6 +377,11 @@ function open () {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .quiz-option.right,
+  .quiz-verdict-line.cheering {
+    animation: none;
+  }
+
   .quiz,
   .quiz::backdrop {
     transition-duration: 1ms;

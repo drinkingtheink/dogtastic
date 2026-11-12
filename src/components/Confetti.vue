@@ -10,6 +10,15 @@ const props = defineProps({
   origin: {
     type: Object,
     default: () => ({ x: 0.5, y: 0.45 })
+  },
+  /**
+   * 'full' is the whole works, for the end of something. 'small' is a
+   * single cone from the origin -- enough to mark a correct answer without
+   * firing cannons across the window eight times a round.
+   */
+  intensity: {
+    type: String,
+    default: 'full'
   }
 })
 
@@ -61,8 +70,8 @@ function makeParticle (x, y, angle, speed, overrides = {}) {
 }
 
 /** The main blast out of the portrait. */
-function burst (cx, cy) {
-  for (let i = 0; i < 110; i++) {
+function burst (cx, cy, count = 110) {
+  for (let i = 0; i < count; i++) {
     // Biased upward: a cone that still throws some pieces sideways.
     const angle = rand(-Math.PI * 0.95, -Math.PI * 0.05) + rand(-0.35, 0.35)
     particles.push(makeParticle(cx, cy, angle, rand(7, 19)))
@@ -181,9 +190,13 @@ onMounted(() => {
   const w = window.innerWidth
   const h = window.innerHeight
 
-  burst(w * props.origin.x, h * props.origin.y)
-  cannons(w, h)
-  setTimeout(() => sprinkle(w), 260)
+  if (props.intensity === 'small') {
+    burst(w * props.origin.x, h * props.origin.y, 46)
+  } else {
+    burst(w * props.origin.x, h * props.origin.y)
+    cannons(w, h)
+    setTimeout(() => sprinkle(w), 260)
+  }
 
   raf = requestAnimationFrame(tick)
 })
