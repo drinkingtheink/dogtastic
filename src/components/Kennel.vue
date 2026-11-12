@@ -2,7 +2,7 @@
   <div ref="rootEl">
     <!-- Sticky, because the roster scrolls inside this panel: left at the
          foot of the list these controls scrolled away with it. -->
-    <header class="kennel-header">
+    <header class="kennel-header yellow-bg">
       <h3 class="kennel-count-display">
         Caring for {{ dogCount }} {{ dogCount === 1 ? "pooch" : "pooches" }}
       </h3>
@@ -233,10 +233,10 @@ function pinLeavingCard (el) {
   top: 0;
   z-index: 2;
   padding: var(--space-4) var(--space-3) var(--space-3);
-  /* Flat fill rather than the panel's pattern: a patterned sticky layer
-     has its own background origin and slides out of register with the
-     panel behind it as the roster scrolls. */
-  background-color: var(--color-yellow-light);
+  /* Carries the panel's own pattern. The tiles stay in register because
+     neither background moves: a scroll container paints its background
+     against its padding box, not its content, and the header sits flush
+     with that same origin. */
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow: 0 8px 14px -10px rgb(16 42 36 / 45%);
 }
