@@ -165,15 +165,21 @@ onBeforeUnmount(() => {
 }
 
 .reel {
-  width: 100vw;
+  /* Most of the screen rather than all of it. These photos are small --
+     plenty are only a few hundred pixels wide -- and filling a 1920px
+     window meant scaling them nearly four times up, which is where the
+     softness came from. Capped, that halves. */
+  width: min(92vw, 1280px);
   max-width: none;
-  height: 100vh;
+  height: min(88vh, 820px);
   max-height: none;
   padding: 0;
   border: 0;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background-color: #0b3b32;
   color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
 
   /* Opens like a house light going down rather than appearing all at once.
      allow-discrete keeps display and overlay alive for the way out. */
@@ -199,7 +205,7 @@ onBeforeUnmount(() => {
 }
 
 .reel::backdrop {
-  background-color: rgb(11 59 50 / 0%);
+  background-color: rgb(55 67 83 / 0%);
   transition:
     background-color 260ms ease,
     overlay 320ms allow-discrete,
@@ -207,12 +213,12 @@ onBeforeUnmount(() => {
 }
 
 .reel[open]::backdrop {
-  background-color: rgb(11 59 50 / 90%);
+  background-color: rgb(55 67 83 / 70%);
 }
 
 @starting-style {
   .reel[open]::backdrop {
-    background-color: rgb(11 59 50 / 0%);
+    background-color: rgb(55 67 83 / 0%);
   }
 }
 
@@ -284,9 +290,11 @@ onBeforeUnmount(() => {
   animation: reel-drift 6s ease-out both;
 }
 
+/* Shallower than it was: the drift used to push the photo to 1.14, on top
+   of whatever the frame already asked of it. */
 @keyframes reel-drift {
-  from { transform: scale(1.02); }
-  to { transform: scale(1.14); }
+  from { transform: scale(1.01); }
+  to { transform: scale(1.08); }
 }
 
 /* Pinned to the bottom edge: the card centres its content, which left the
