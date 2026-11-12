@@ -7,7 +7,7 @@
         </h1>
         <p class="app-tagline">{{ SUB_HEADLINE }}</p>
 
-        <BrandMark class="brand-mark-slot" />
+        <BrandMark class="brand-mark-slot" :trigger="dogsLanded" />
       </header>
 
       <DogSearch
@@ -110,6 +110,10 @@ const collectedBreeds = computed(
   () => [...new Set(roster.value.map(dog => dog.breed).filter(Boolean))]
 )
 
+/* Counts arrivals; the mark watches it so its question mark spins each
+   time a dog lands. */
+const dogsLanded = ref(0)
+
 const kennelOnScreen = ref(true)
 
 let inFlight = null
@@ -126,6 +130,7 @@ function sendToKennel (dog) {
 
   if (reduceMotion || !kennelBox || !dog.origin) {
     add(dog)
+    dogsLanded.value += 1
     return
   }
 
@@ -165,6 +170,8 @@ function landDog () {
     add(inFlight)
     inFlight = null
   }
+
+  dogsLanded.value += 1
 
   flight.value = null
   receiving.value = true
