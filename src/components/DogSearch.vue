@@ -56,7 +56,7 @@
       @done="confettiOn = false"
     />
 
-    <h4>{{ PROMPT }}</h4>
+    <h4>{{ prompt }}</h4>
 
     <form class="custom-name" @submit.prevent="claimCustomName">
       <label class="custom-name-label" for="custom-name-input">
@@ -120,7 +120,25 @@ import { useDogApi } from '../composables/useDogApi'
 import { useNames } from '../composables/useNames'
 
 const TITLE = 'Name that Pooch'
-const PROMPT = 'What name is worthy of this magnificent creature?'
+
+/* A fresh dog deserves a fresh ask. */
+const PROMPTS = [
+  'What name is worthy of this magnificent creature?',
+  'What shall we call this very good dog?',
+  'This one needs a name. No pressure.',
+  'Name this noble beast.',
+  'A name befitting such a face?',
+  'What do we christen this fine animal?',
+  'Behold. Now name them.',
+  'Go on, give them a name.',
+  'Choose wisely. They will have it forever.',
+  'Every dog deserves a name. This one included.',
+  'What is this one going to be called?',
+  'Quick, think of something good.',
+  'A distinguished individual. And their name is?',
+  'This creature awaits a name.',
+  'Who is this, and what do we call them?'
+]
 
 const CELEBRATION_MS = 1000
 const MAX_NAME_LENGTH = 40
@@ -149,6 +167,19 @@ const portraitStyle = computed(() =>
   image.value ? { backgroundImage: `url('${image.value}')` } : {}
 )
 const { names, loading: namesLoading, drawNames, removeName } = useNames()
+
+const prompt = ref(PROMPTS[Math.floor(Math.random() * PROMPTS.length)])
+
+/* Never the same ask twice running, which would read as a bug. */
+function freshPrompt () {
+  if (PROMPTS.length < 2) return
+
+  let next = prompt.value
+  while (next === prompt.value) {
+    next = PROMPTS[Math.floor(Math.random() * PROMPTS.length)]
+  }
+  prompt.value = next
+}
 
 const selectedName = ref(null)
 const customName = ref('')
@@ -218,6 +249,10 @@ function claimCustomName () {
   customName.value = ''
   claimDog(name, customRowEl.value)
 }
+
+watch(image, (current, previous) => {
+  if (current && previous) freshPrompt()
+})
 
 // Refill the gallery once it has been emptied.
 watch(names, current => {

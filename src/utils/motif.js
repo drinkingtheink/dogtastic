@@ -17,7 +17,9 @@ const PALETTES = {
 
 export const CAPTIONS = [
   'My Boo',
+  'My Boo Thang',
   'Da Best',
+  'The Goodest',
   'Certified Floof',
   '10/10 would pet',
   'Absolute Unit',
@@ -30,7 +32,28 @@ export const CAPTIONS = [
   'Pure of Heart',
   'Employee of the Month',
   'Wow. Just Wow.',
-  'Simply The Finest'
+  'Simply The Finest',
+  'Precious Baby',
+  'Sweet Potato',
+  'My Little Gremlin',
+  'Snack Sized',
+  'Chief Zoomie Officer',
+  'Head of Security',
+  'Professional Napper',
+  'Licensed to Boop',
+  'Bread Loaf',
+  'Pure Sunshine',
+  'Treat Enthusiast',
+  'Full of Beans',
+  'Perfect, No Changes',
+  'Nap Champion',
+  'Certified Sweetheart',
+  'My Entire Heart',
+  'Unbothered. Thriving.',
+  'Good Dog Energy',
+  'Wiggle Machine',
+  'Here For a Good Time',
+  'An Absolute Gem'
 ]
 
 function hash (value) {
