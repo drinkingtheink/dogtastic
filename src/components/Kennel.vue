@@ -19,11 +19,16 @@
         <div v-if="dogCount > 0" class="kennel-actions">
           <KennelReel :dogs="dogs" />
 
+          <button class="utility" :disabled="saving" @click="saveSheet">
+            {{ saving ? saveLabel : 'Save as image' }}
+          </button>
+
           <button class="clear-kennel utility" @click="emit('clearKennel')">
             Empty Kennel
           </button>
         </div>
       </Transition>
+      <p v-if="saveNote" class="kennel-save-note">{{ saveNote }}</p>
     </header>
 
     <TransitionGroup
@@ -80,9 +85,10 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUpdate, useTemplateRef } from "vue"
+import { computed, ref, onBeforeUpdate, useTemplateRef } from "vue"
 import DogCard from "./DogCard.vue"
 import KennelReel from "./KennelReel.vue"
+import { downloadKennel } from "../utils/downloadKennel"
 
 const EMPTY_MESSAGE = "-- There is a sad lack of pooches in your kennel --"
 
@@ -96,6 +102,30 @@ const props = defineProps({
 const emit = defineEmits(["removeDogFromKennel", "clearKennel", "repositionDog", "moveMotif"])
 
 const dogCount = computed(() => props.dogs.length)
+
+const saving = ref(false)
+const saveLabel = ref("Saving...")
+const saveNote = ref("")
+
+async function saveSheet () {
+  saving.value = true
+  saveNote.value = ""
+
+  try {
+    const result = await downloadKennel(props.dogs, {
+      onProgress: (done, total) => { saveLabel.value = `${done} of ${total}...` }
+    })
+
+    if (result.omitted > 0) {
+      saveNote.value = `Saved the ${result.drawn} most recent; ${result.omitted} would not fit on one sheet.`
+    }
+  } catch {
+    saveNote.value = "Could not build that sheet. Try again?"
+  } finally {
+    saving.value = false
+    saveLabel.value = "Saving..."
+  }
+}
 
 const breedCount = computed(
   () => new Set(props.dogs.map(dog => dog.breed).filter(Boolean)).size
@@ -209,6 +239,13 @@ function pinLeavingCard (el) {
   background-color: var(--color-yellow-light);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   box-shadow: 0 8px 14px -10px rgb(16 42 36 / 45%);
+}
+
+.kennel-save-note {
+  margin: var(--space-2) 0 0;
+  color: var(--color-green-deep);
+  font-size: var(--text-xs);
+  font-weight: bold;
 }
 
 .kennel-actions {
