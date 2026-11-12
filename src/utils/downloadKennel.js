@@ -185,7 +185,7 @@ export async function downloadKennel (allDogs, { onProgress } = {}) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = 'dogtastic-kennel.jpg'
+  link.download = 'dogtastic-kennel-poster.jpg'
   document.body.appendChild(link)
   link.click()
   link.remove()

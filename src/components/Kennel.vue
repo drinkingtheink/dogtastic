@@ -20,7 +20,7 @@
           <KennelReel :dogs="dogs" />
 
           <button class="utility" :disabled="saving" @click="saveSheet">
-            {{ saving ? saveLabel : 'Save as image' }}
+            {{ saving ? saveLabel : "Save Kennel Poster" }}
           </button>
 
           <button class="clear-kennel utility" @click="emit('clearKennel')">
